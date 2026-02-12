@@ -9,9 +9,7 @@ class Ouders
         $this->pdo = $pdo;
     }
 
-    /* =====================================================
-       BESTAANDE CRUD (optioneel voorbeeld)
-    ===================================================== */
+
 
     public function create(int $user_id, int $person_id): bool
     {
@@ -37,12 +35,9 @@ class Ouders
         }
     }
 
-    /* =====================================================
-       NIEUWE FUNCTIE:
-       Maakt person + user + ouder in 1 transactie
-    ===================================================== */
 
-    public function createFullOuder(
+
+    public function registerouder(
         string $voornaam,
         ?string $tussenvoegsels,
         string $achternaam,
@@ -54,7 +49,7 @@ class Ouders
         try {
             $this->pdo->beginTransaction();
 
-            /* 1️⃣ PERSON */
+
 
             $stmtPerson = $this->pdo->prepare(
                 "INSERT INTO person (voornaam, tussenvoegsels, achternaam)
@@ -70,7 +65,7 @@ class Ouders
             $person_id = $this->pdo->lastInsertId();
 
 
-            /* 2️⃣ USER */
+            
 
             $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
 
@@ -89,7 +84,6 @@ class Ouders
             $user_id = $this->pdo->lastInsertId();
 
 
-            /* 3️⃣ OUDER KOPPELING */
 
             $stmtOuder = $this->pdo->prepare(
                 "INSERT INTO ouders (user_id, person_id)
@@ -102,7 +96,7 @@ class Ouders
             ]);
 
 
-            /* 4️⃣ COMMIT */
+
 
             $this->pdo->commit();
             return true;

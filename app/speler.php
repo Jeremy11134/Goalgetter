@@ -110,4 +110,87 @@ class Speler
             return false;
         }
     }
+
+        public function registerspeler(
+        string $voornaam,
+        ?string $tussenvoegsels,
+        string $achternaam,
+        string $email,
+        string $password,
+        string $lidnummer,
+        int $club_id
+    ): bool {
+
+        try {
+            $this->pdo->beginTransaction();
+
+
+
+            $stmtPerson = $this->pdo->prepare(
+                "INSERT INTO person (voornaam, tussenvoegsels, achternaam)
+                VALUES (:voornaam, :tussenvoegsels, :achternaam)"
+            );
+
+            $stmtPerson->execute([
+                'voornaam'       => $voornaam,
+                'tussenvoegsels' => $tussenvoegsels ?? '',
+                'achternaam'     => $achternaam
+            ]);
+
+            $person_id = $this->pdo->lastInsertId();
+
+
+
+            $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
+
+            $stmtUser = $this->pdo->prepare(
+                "INSERT INTO `user` (email, userrol, password, lidnummer)
+                VALUES (:email, :userrol, :password, :lidnummer)"
+            );
+
+            $stmtUser->execute([
+                'email'     => $email,
+                'userrol'   => 'speler',
+                'password'  => $hashedPassword,
+                'lidnummer' => $lidnummer
+            ]);
+
+            $user_id = $this->pdo->lastInsertId();
+
+
+
+            $stmtStats = $this->pdo->prepare(
+                "INSERT INTO statistieken (goals, win, draw, loses)
+                VALUES (0, 0, 0, 0)"
+            );
+
+            $stmtStats->execute();
+
+            $statistieken_id = $this->pdo->lastInsertId();
+
+
+            $stmtSpeler = $this->pdo->prepare(
+                "INSERT INTO speler (user_id, person_id, club_id, statistieken_id)
+                VALUES (:user_id, :person_id, :club_id, :statistieken_id)"
+            );
+
+            $stmtSpeler->execute([
+                'user_id'         => $user_id,
+                'person_id'       => $person_id,
+                'club_id'         => $club_id,
+                'statistieken_id' => $statistieken_id
+            ]);
+
+
+
+            $this->pdo->commit();
+            return true;
+
+        } catch (PDOException $e) {
+
+            $this->pdo->rollBack();
+            die("Database error: " . $e->getMessage());
+        }
+    }
+
 }
