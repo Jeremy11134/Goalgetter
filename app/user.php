@@ -6,10 +6,17 @@ class User
 
     public function __construct(PDO $pdo)
     {
-        $this->pdo = $pdo;
+        {
+            $this->pdo = $pdo;
+    
+
+            if (session_status() === PHP_SESSION_NONE) {
+                session_start();
+            }
+        }
     }
 
-    /* CREATE */
+
     public function create(
         string $email,
         string $userrol,
@@ -40,14 +47,14 @@ class User
         }
     }
 
-    /* READ ALL */
+  
     public function readAll(): array
     {
         $stmt = $this->pdo->query("SELECT * FROM user");
         return $stmt->fetchAll();
     }
 
-    /* READ ONE */
+
     public function read(int $id): array|false
     {
         $stmt = $this->pdo->prepare("SELECT * FROM user WHERE id = :id");
@@ -56,7 +63,6 @@ class User
         return $stmt->fetch();
     }
 
-    /* UPDATE */
     public function update(
         int $id,
         string $email,
@@ -90,7 +96,7 @@ class User
         }
     }
 
-    /* DELETE */
+
     public function delete(int $id): bool
     {
         try {
@@ -107,4 +113,72 @@ class User
             return false;
         }
     }
+
+
+
+
+
+    public function login(string $identifier, string $password): bool
+    {
+        $stmt = $this->pdo->prepare(
+            "SELECT * FROM `user`
+             WHERE email = :email
+             OR lidnummer = :lidnummer
+             LIMIT 1"
+        );
+    
+        $stmt->execute([
+            'email'     => $identifier,
+            'lidnummer' => $identifier
+        ]);
+    
+        $user = $stmt->fetch();
+    
+        if (!$user) {
+            return false;
+        }
+    
+        if (!password_verify($password, $user['password'])) {
+            return false;
+        }
+    
+        session_regenerate_id(true);
+    
+        $_SESSION['user_id']   = $user['id'];
+        $_SESSION['email']     = $user['email'];
+        $_SESSION['lidnummer'] = $user['lidnummer'];
+        $_SESSION['role']      = $user['userrol'];
+    
+        return true;
+    }
+
+
+    public function logout(): void
+    {
+        $_SESSION = [];
+        session_destroy();
+    }
+
+
+    public function isLoggedIn(): bool
+    {
+        return isset($_SESSION['user_id']);
+    }
+
+
+
+    public function currentUser(): array|null
+    {
+        if (!$this->isLoggedIn()) {
+            return null;
+        }
+
+        return [
+            'id'        => $_SESSION['user_id'],
+            'email'     => $_SESSION['email'],
+            'lidnummer' => $_SESSION['lidnummer'],
+            'role'      => $_SESSION['role']
+        ];
+    }
+        
 }
