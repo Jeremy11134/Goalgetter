@@ -19,16 +19,21 @@ class Trainingen
         ?string $description,
         string $status
     ): bool {
+    
+        if ($this->trainingControle($date, $start, $end)) {
+            return false;
+        }
+    
         try {
             $this->pdo->beginTransaction();
-
+    
             $stmt = $this->pdo->prepare(
                 "INSERT INTO trainingen
                 (training_aanwezigen_id, start, end, titel, date, description, status)
                 VALUES
                 (:training_aanwezigen_id, :start, :end, :titel, :date, :description, :status)"
             );
-
+    
             $stmt->execute([
                 'training_aanwezigen_id' => $training_aanwezigen_id,
                 'start'                  => $start,
@@ -38,10 +43,10 @@ class Trainingen
                 'description'            => $description,
                 'status'                 => $status
             ]);
-
+    
             $this->pdo->commit();
             return true;
-
+    
         } catch (PDOException $e) {
             $this->pdo->rollBack();
             return false;
@@ -132,5 +137,31 @@ class Trainingen
             $this->pdo->rollBack();
             return false;
         }
+    }
+
+
+    public function trainingControle(
+        string $date,
+        string $start,
+        string $end
+    ): bool {
+    
+        $stmt = $this->pdo->prepare(
+            "SELECT COUNT(*) FROM trainingen
+             WHERE date = :date
+             AND (
+                    (:start < end)
+                    AND
+                    (:end > start)
+                 )"
+        );
+    
+        $stmt->execute([
+            'date'  => $date,
+            'start' => $start,
+            'end'   => $end
+        ]);
+    
+        return $stmt->fetchColumn() > 0;
     }
 }
