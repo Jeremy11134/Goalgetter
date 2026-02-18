@@ -2,26 +2,23 @@
 session_start();
 
 require_once "connect.php";
-require_once "./app/trainer.php";
+require_once "./app/speler.php";
 
 $db = new Connect();
 $pdo = $db->pdo();
 
-/* Fake login voor test */
-$_SESSION['role'] = 'trainer';
+$speler = new Speler($pdo);
 
-$trainer = new Trainer($pdo);
+$stats = $speler->getStatistieken(2);
 
-if ($trainer->createTraining(
-    1,
-    "18:00",
-    "19:30",
-    "Avondtraining",
-    "2026-03-10",
-    "Focus op passing",
-    "planned"
-)) {
-    echo "Training aangemaakt ✅";
+if ($stats) {
+    echo "<pre>";
+    print_r($stats);
+    echo "</pre>";
 } else {
-    echo "Geen toegang of fout ❌";
+    echo "Speler niet gevonden";
 }
+echo "Goals: " . $stats['goals'] . "<br>";
+echo "Wins: " . $stats['win'] . "<br>";
+echo "Draws: " . $stats['draw'] . "<br>";
+echo "Losses: " . $stats['loses'] . "<br>";

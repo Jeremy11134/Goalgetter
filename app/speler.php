@@ -193,4 +193,33 @@ class Speler
         }
     }
 
+
+    public function getStatistieken(int $speler_id): array|false
+{
+
+    $stmt = $this->pdo->prepare(
+        "SELECT statistieken_id
+         FROM speler
+         WHERE id = :id
+         LIMIT 1"
+    );
+
+    $stmt->execute(['id' => $speler_id]);
+
+    $result = $stmt->fetch();
+
+    if (!$result) {
+        return false; 
+    }
+
+    $statistieken_id = $result['statistieken_id'];
+
+
+    require_once 'Statistieken.php';
+
+    $statistieken = new Statistieken($this->pdo);
+
+    return $statistieken->read((int)$statistieken_id);
+}
+
 }
