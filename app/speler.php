@@ -222,4 +222,81 @@ class Speler
     return $statistieken->read((int)$statistieken_id);
 }
 
+
+public function meldAanwezigheid(
+    int $training_id,
+    string $status
+): bool {
+
+    if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'speler') {
+        return false;
+    }
+
+    try {
+        $this->pdo->beginTransaction();
+
+        /* 1️⃣ speler_id ophalen */
+        $stmt = $this->pdo->prepare(
+            "SELECT id FROM speler WHERE user_id = :user_id LIMIT 1"
+        );
+
+        $stmt->execute([
+            'user_id' => $_SESSION['user_id']
+        ]);
+
+        $speler = $stmt->fetch();
+
+        if (!$speler) {
+            throw new Exception("Speler niet gevonden");
+        }
+
+        $speler_id = $speler['id'];
+
+        /* 2️⃣ Check of al bestaat */
+        $stmt = $this->pdo->prepare(
+            "SELECT id FROM training_aanwezigen
+             WHERE speler_id = :speler_id
+             AND trainer_id = :trainer_id
+             LIMIT 1"
+        );
+
+        $stmt->execute([
+            'speler_id'  => $speler_id,
+            'trainer_id'=> $training_id
+        ]);
+
+        $exists = $stmt->fetch();
+
+        if ($exists) {
+            /* Update */
+            $stmt = $this->pdo->prepare(
+                "UPDATE training_aanwezigen
+                 SET status = :status
+                 WHERE speler_id = :speler_id
+                 AND trainer_id = :trainer_id"
+            );
+        } else {
+            /* Insert */
+            $stmt = $this->pdo->prepare(
+                "INSERT INTO training_aanwezigen
+                 (speler_id, trainer_id, status)
+                 VALUES (:speler_id, :trainer_id, :status)"
+            );
+        }
+
+        $stmt->execute([
+            'speler_id'   => $speler_id,
+            'trainer_id' => $training_id,
+            'status'      => $status
+        ]);
+
+        $this->pdo->commit();
+        return true;
+
+    } catch (Throwable $e) {
+        $this->pdo->rollBack();
+        return false;
+    }
+}
+
 }

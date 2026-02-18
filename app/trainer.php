@@ -172,48 +172,65 @@ class Trainer
     }
 
 
-        public function createTraining(
-        int $training_aanwezigen_id,
-        string $start,
-        string $end,
-        string $titel,
-        string $date,
-        ?string $description,
-        string $status
-    ): bool {
+public function createTrainingMetSpelers(
+    string $start,
+    string $end,
+    string $titel,
+    string $date,
+    ?string $description,
+    string $status,
+    array $speler_ids   // ← geselecteerde spelers
+): bool {
 
-        if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'trainer') {
-        die("Geen toegang");
+    if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'trainer') {
+        return false;
     }
 
-        try {
-            $this->pdo->beginTransaction();
+    try {
+        $this->pdo->beginTransaction();
 
-            $stmt = $this->pdo->prepare(
-                "INSERT INTO trainingen
-                (training_aanwezigen_id, start, end, titel, date, description, status)
-                VALUES
-                (:training_aanwezigen_id, :start, :end, :titel, :date, :description, :status)"
-            );
+        /* 1️⃣ Training aanmaken */
+        $stmt = $this->pdo->prepare(
+            "INSERT INTO trainingen
+            (start, end, titel, date, description, status)
+            VALUES
+            (:start, :end, :titel, :date, :description, :status)"
+        );
 
-            $stmt->execute([
-                'training_aanwezigen_id' => $training_aanwezigen_id,
-                'start'                  => $start,
-                'end'                    => $end,
-                'titel'                  => $titel,
-                'date'                   => $date,
-                'description'            => $description,
-                'status'                 => $status
+        $stmt->execute([
+            'start'       => $start,
+            'end'         => $end,
+            'titel'       => $titel,
+            'date'        => $date,
+            'description' => $description,
+            'status'      => $status
+        ]);
+
+        $training_id = $this->pdo->lastInsertId();
+
+        /* 2️⃣ Spelers koppelen */
+        $stmtAanwezig = $this->pdo->prepare(
+            "INSERT INTO training_aanwezigen
+             (speler_id, trainer_id, status)
+             VALUES (:speler_id, :trainer_id, :status)"
+        );
+
+        foreach ($speler_ids as $speler_id) {
+            $stmtAanwezig->execute([
+                'speler_id'  => $speler_id,
+                'trainer_id'=> $training_id,
+                'status'     => 'aanwezig'
             ]);
-
-            $this->pdo->commit();
-            return true;
-
-        } catch (PDOException $e) {
-            $this->pdo->rollBack();
-            return false;
         }
+
+        $this->pdo->commit();
+        return true;
+
+    } catch (Throwable $e) {
+        $this->pdo->rollBack();
+        return false;
     }
+}
 
 
         public function createWedstrijd(

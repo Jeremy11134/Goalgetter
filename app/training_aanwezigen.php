@@ -111,4 +111,27 @@ class TrainingAanwezigen
             return false;
         }
     }
+
+
+
+    public function getSpelersVoorTraining(int $training_id): array
+    {
+    $stmt = $this->pdo->prepare(
+        "SELECT 
+            ta.id,
+            p.voornaam,
+            p.tussenvoegsels,
+            p.achternaam,
+            ta.status
+        FROM training_aanwezigen ta
+        JOIN speler s ON ta.speler_id = s.id
+        JOIN person p ON s.person_id = p.id
+        WHERE ta.trainer_id = :trainer_id
+        ORDER BY p.achternaam ASC"
+    );
+
+    $stmt->execute(['trainer_id' => $training_id]);
+
+    return $stmt->fetchAll();
+    }
 }

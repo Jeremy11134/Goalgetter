@@ -7,18 +7,17 @@ require_once "./app/speler.php";
 $db = new Connect();
 $pdo = $db->pdo();
 
+/* Fake login als speler */
+$_SESSION['role'] = 'speler';
+$_SESSION['user_id'] = 2; // moet een speler user zijn
+
 $speler = new Speler($pdo);
 
-$stats = $speler->getStatistieken(2);
+/* Meld aanwezig */
+$result = $speler->meldAanwezigheid(1, 'aanwezig');
 
-if ($stats) {
-    echo "<pre>";
-    print_r($stats);
-    echo "</pre>";
+if ($result) {
+    echo "Status succesvol opgeslagen ✅";
 } else {
-    echo "Speler niet gevonden";
+    echo "Fout ❌";
 }
-echo "Goals: " . $stats['goals'] . "<br>";
-echo "Wins: " . $stats['win'] . "<br>";
-echo "Draws: " . $stats['draw'] . "<br>";
-echo "Losses: " . $stats['loses'] . "<br>";
