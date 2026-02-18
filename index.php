@@ -9,15 +9,12 @@ $pdo = $db->pdo();
 
 /* Fake login als speler */
 $_SESSION['role'] = 'speler';
-$_SESSION['user_id'] = 2; // moet een speler user zijn
+$_SESSION['user_id'] = 2;
 
 $speler = new Speler($pdo);
 
-/* Meld aanwezig */
-$result = $speler->meldAanwezigheid(1, 'aanwezig');
+/* Training aanmelden */
+$speler->meldAanwezigheid('training', 1, 'afwezig');
 
-if ($result) {
-    echo "Status succesvol opgeslagen ✅";
-} else {
-    echo "Fout ❌";
-}
+/* Wedstrijd afmelden */
+$speler->meldAanwezigheid('wedstrijd', 3, 'aanwezig');

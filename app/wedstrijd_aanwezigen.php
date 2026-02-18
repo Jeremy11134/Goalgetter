@@ -111,4 +111,27 @@ class WedstrijdAanwezigen
             return false;
         }
     }
+
+        public function getSpelersVoorWedstrijd(int $wedstrijd_id): array
+{
+    $stmt = $this->pdo->prepare(
+        "SELECT 
+            wa.id,
+            p.voornaam,
+            p.tussenvoegsels,
+            p.achternaam,
+            wa.status
+        FROM wedstrijd_aanwezigen wa
+        JOIN speler s ON wa.speler_id = s.id
+        JOIN person p ON s.person_id = p.id
+        WHERE wa.wedstrijd_id = :wedstrijd_id
+        ORDER BY p.achternaam ASC"
+    );
+
+    $stmt->execute([
+        'wedstrijd_id' => $wedstrijd_id
+    ]);
+
+    return $stmt->fetchAll();
+    }
 }

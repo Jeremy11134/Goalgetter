@@ -126,11 +126,11 @@ class TrainingAanwezigen
         FROM training_aanwezigen ta
         JOIN speler s ON ta.speler_id = s.id
         JOIN person p ON s.person_id = p.id
-        WHERE ta.trainer_id = :trainer_id
+        WHERE ta.training_id = :training_id
         ORDER BY p.achternaam ASC"
     );
 
-    $stmt->execute(['trainer_id' => $training_id]);
+    $stmt->execute(['training_id' => $training_id]);
 
     return $stmt->fetchAll();
     }

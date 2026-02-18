@@ -224,8 +224,9 @@ class Speler
 
 
 public function meldAanwezigheid(
-    int $training_id,
-    string $status
+    string $type,      // 'training' of 'wedstrijd'
+    int $event_id,
+    string $status     // aanwezig / afwezig
 ): bool {
 
     if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'speler') {
@@ -252,42 +253,53 @@ public function meldAanwezigheid(
 
         $speler_id = $speler['id'];
 
-        /* 2️⃣ Check of al bestaat */
+        /* 2️⃣ Tabel bepalen */
+        if ($type === 'training') {
+            $table = 'training_aanwezigen';
+            $column = 'training_id';
+        } elseif ($type === 'wedstrijd') {
+            $table = 'wedstrijd_aanwezigen';
+            $column = 'wedstrijd_id';
+        } else {
+            throw new Exception("Ongeldig type");
+        }
+
+        /* 3️⃣ Bestaat al? */
         $stmt = $this->pdo->prepare(
-            "SELECT id FROM training_aanwezigen
+            "SELECT id FROM $table
              WHERE speler_id = :speler_id
-             AND trainer_id = :trainer_id
+             AND $column = :event_id
              LIMIT 1"
         );
 
         $stmt->execute([
-            'speler_id'  => $speler_id,
-            'trainer_id'=> $training_id
+            'speler_id' => $speler_id,
+            'event_id'  => $event_id
         ]);
 
         $exists = $stmt->fetch();
 
         if ($exists) {
-            /* Update */
+            /* UPDATE */
             $stmt = $this->pdo->prepare(
-                "UPDATE training_aanwezigen
+                "UPDATE $table
                  SET status = :status
                  WHERE speler_id = :speler_id
-                 AND trainer_id = :trainer_id"
+                 AND $column = :event_id"
             );
         } else {
-            /* Insert */
+            /* INSERT */
             $stmt = $this->pdo->prepare(
-                "INSERT INTO training_aanwezigen
-                 (speler_id, trainer_id, status)
-                 VALUES (:speler_id, :trainer_id, :status)"
+                "INSERT INTO $table
+                 (speler_id, $column, status)
+                 VALUES (:speler_id, :event_id, :status)"
             );
         }
 
         $stmt->execute([
-            'speler_id'   => $speler_id,
-            'trainer_id' => $training_id,
-            'status'      => $status
+            'speler_id' => $speler_id,
+            'event_id'  => $event_id,
+            'status'    => $status
         ]);
 
         $this->pdo->commit();
@@ -298,5 +310,4 @@ public function meldAanwezigheid(
         return false;
     }
 }
-
 }
