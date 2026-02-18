@@ -171,4 +171,94 @@ class Trainer
         }
     }
 
+
+        public function createTraining(
+        int $training_aanwezigen_id,
+        string $start,
+        string $end,
+        string $titel,
+        string $date,
+        ?string $description,
+        string $status
+    ): bool {
+
+        if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'trainer') {
+        die("Geen toegang");
+    }
+
+        try {
+            $this->pdo->beginTransaction();
+
+            $stmt = $this->pdo->prepare(
+                "INSERT INTO trainingen
+                (training_aanwezigen_id, start, end, titel, date, description, status)
+                VALUES
+                (:training_aanwezigen_id, :start, :end, :titel, :date, :description, :status)"
+            );
+
+            $stmt->execute([
+                'training_aanwezigen_id' => $training_aanwezigen_id,
+                'start'                  => $start,
+                'end'                    => $end,
+                'titel'                  => $titel,
+                'date'                   => $date,
+                'description'            => $description,
+                'status'                 => $status
+            ]);
+
+            $this->pdo->commit();
+            return true;
+
+        } catch (PDOException $e) {
+            $this->pdo->rollBack();
+            return false;
+        }
+    }
+
+
+        public function createWedstrijd(
+        int $wedstrijd_aanwezigen_id,
+        int $club_id,
+        string $start,
+        string $end,
+        string $titel,
+        string $date,
+        ?string $description,
+        string $status
+        ): bool {
+
+        if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'trainer') {
+        die("Geen toegang");
+        }
+
+        try {
+            $this->pdo->beginTransaction();
+
+            $stmt = $this->pdo->prepare(
+                "INSERT INTO wedstrijden
+                (wedstrijd_aanwezigen_id, club_id, start, end, titel, date, description, status)
+                VALUES
+                (:wedstrijd_aanwezigen_id, :club_id, :start, :end, :titel, :date, :description, :status)"
+            );
+
+            $stmt->execute([
+                'wedstrijd_aanwezigen_id' => $wedstrijd_aanwezigen_id,
+                'club_id'                 => $club_id,
+                'start'                   => $start,
+                'end'                     => $end,
+                'titel'                   => $titel,
+                'date'                    => $date,
+                'description'             => $description,
+                'status'                  => $status
+            ]);
+
+            $this->pdo->commit();
+            return true;
+
+        } catch (PDOException $e) {
+            $this->pdo->rollBack();
+            return false;
+        }
+    }
+
 }

@@ -1,60 +1,27 @@
 <?php
-
-ini_set('display_errors', 1);
-error_reporting(E_ALL);
+session_start();
 
 require_once "connect.php";
-require_once "./app/trainingen.php";
+require_once "./app/trainer.php";
 
 $db = new Connect();
 $pdo = $db->pdo();
-$trainingen = new Trainingen($pdo);
 
-echo "<h2>Test dubbele trainingen</h2>";
+/* Fake login voor test */
+$_SESSION['role'] = 'trainer';
 
-// Eerste training (zou moeten lukken)
-$result1 = $trainingen->create(
+$trainer = new Trainer($pdo);
+
+if ($trainer->createTraining(
     1,
     "18:00",
     "19:30",
     "Avondtraining",
-    "2026-02-20",
-    "Conditietraining",
+    "2026-03-10",
+    "Focus op passing",
     "planned"
-);
-
-echo $result1
-    ? "Training 1 aangemaakt ✅<br>"
-    : "Training 1 geweigerd ❌<br>";
-
-
-// Tweede training met overlap (zou geweigerd moeten worden)
-$result2 = $trainingen->create(
-    1,
-    "18:30",
-    "20:00",
-    "Overlappende training",
-    "2026-02-20",
-    "Test overlap",
-    "planned"
-);
-
-echo $result2
-    ? "Training 2 aangemaakt (FOUT) ❌<br>"
-    : "Training 2 correct geweigerd ✅<br>";
-
-
-// Derde training zonder overlap (zou moeten lukken)
-$result3 = $trainingen->create(
-    1,
-    "19:30",
-    "21:00",
-    "Late training",
-    "2026-02-20",
-    "Geen overlap",
-    "planned"
-);
-
-echo $result3
-    ? "Training 3 aangemaakt ✅<br>"
-    : "Training 3 geweigerd ❌<br>";
+)) {
+    echo "Training aangemaakt ✅";
+} else {
+    echo "Geen toegang of fout ❌";
+}
