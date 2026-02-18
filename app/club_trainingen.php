@@ -9,7 +9,10 @@ class ClubTrainingen
         $this->pdo = $pdo;
     }
 
-    /* CREATE */
+    /* ===============================
+       CREATE
+    =============================== */
+
     public function create(int $club_id, int $training_id): bool
     {
         try {
@@ -29,32 +32,60 @@ class ClubTrainingen
             return true;
 
         } catch (PDOException $e) {
+
             $this->pdo->rollBack();
+            error_log("ClubTrainingen::create error: " . $e->getMessage());
+
             return false;
         }
     }
 
-    /* READ ALL */
+    /* ===============================
+       READ ALL
+    =============================== */
+
     public function readAll(): array
     {
-        $stmt = $this->pdo->query(
-            "SELECT * FROM club_trainingen ORDER BY id DESC"
-        );
-        return $stmt->fetchAll();
+        try {
+            $stmt = $this->pdo->query(
+                "SELECT * FROM club_trainingen ORDER BY id DESC"
+            );
+
+            return $stmt->fetchAll();
+
+        } catch (PDOException $e) {
+
+            error_log("ClubTrainingen::readAll error: " . $e->getMessage());
+            return [];
+        }
     }
 
-    /* READ ONE */
+    /* ===============================
+       READ ONE
+    =============================== */
+
     public function read(int $id): array|false
     {
-        $stmt = $this->pdo->prepare(
-            "SELECT * FROM club_trainingen WHERE id = :id"
-        );
-        $stmt->execute(['id' => $id]);
+        try {
+            $stmt = $this->pdo->prepare(
+                "SELECT * FROM club_trainingen WHERE id = :id"
+            );
 
-        return $stmt->fetch();
+            $stmt->execute(['id' => $id]);
+
+            return $stmt->fetch();
+
+        } catch (PDOException $e) {
+
+            error_log("ClubTrainingen::read error: " . $e->getMessage());
+            return false;
+        }
     }
 
-    /* UPDATE */
+    /* ===============================
+       UPDATE
+    =============================== */
+
     public function update(int $id, int $club_id, int $training_id): bool
     {
         try {
@@ -77,12 +108,18 @@ class ClubTrainingen
             return true;
 
         } catch (PDOException $e) {
+
             $this->pdo->rollBack();
+            error_log("ClubTrainingen::update error: " . $e->getMessage());
+
             return false;
         }
     }
 
-    /* DELETE */
+    /* ===============================
+       DELETE
+    =============================== */
+
     public function delete(int $id): bool
     {
         try {
@@ -91,13 +128,17 @@ class ClubTrainingen
             $stmt = $this->pdo->prepare(
                 "DELETE FROM club_trainingen WHERE id = :id"
             );
+
             $stmt->execute(['id' => $id]);
 
             $this->pdo->commit();
             return true;
 
         } catch (PDOException $e) {
+
             $this->pdo->rollBack();
+            error_log("ClubTrainingen::delete error: " . $e->getMessage());
+
             return false;
         }
     }

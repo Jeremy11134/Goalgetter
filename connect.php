@@ -21,9 +21,18 @@ class Connect
         ];
 
         try {
+
             $this->pdo = new PDO($dsn, $user, $pass, $options);
+
+            // Optional: log succesvolle connectie (voor debug)
+            // error_log("Database connected successfully.");
+
         } catch (PDOException $e) {
-            die("Database connection failed: " . $e->getMessage());
+
+            error_log("Database connection failed: " . $e->getMessage());
+
+            // Gooi exception door i.p.v. die()
+            throw new PDOException("Database connection failed.");
         }
     }
 

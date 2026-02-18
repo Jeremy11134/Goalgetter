@@ -6,16 +6,16 @@ class User
 
     public function __construct(PDO $pdo)
     {
-        {
-            $this->pdo = $pdo;
-    
+        $this->pdo = $pdo;
 
-            if (session_status() === PHP_SESSION_NONE) {
-                session_start();
-            }
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
         }
     }
 
+    /* ===============================
+       CREATE
+    =============================== */
 
     public function create(
         string $email,
@@ -42,26 +42,53 @@ class User
             return true;
 
         } catch (PDOException $e) {
+
             $this->pdo->rollBack();
+
+            error_log("User::create error: " . $e->getMessage());
+
             return false;
         }
     }
 
-  
+    /* ===============================
+       READ ALL
+    =============================== */
+
     public function readAll(): array
     {
-        $stmt = $this->pdo->query("SELECT * FROM user");
-        return $stmt->fetchAll();
+        try {
+            $stmt = $this->pdo->query("SELECT * FROM user");
+            return $stmt->fetchAll();
+        } catch (PDOException $e) {
+
+            error_log("User::readAll error: " . $e->getMessage());
+            return [];
+        }
     }
 
+    /* ===============================
+       READ ONE
+    =============================== */
 
     public function read(int $id): array|false
     {
-        $stmt = $this->pdo->prepare("SELECT * FROM user WHERE id = :id");
-        $stmt->execute(['id' => $id]);
+        try {
+            $stmt = $this->pdo->prepare("SELECT * FROM user WHERE id = :id");
+            $stmt->execute(['id' => $id]);
 
-        return $stmt->fetch();
+            return $stmt->fetch();
+
+        } catch (PDOException $e) {
+
+            error_log("User::read error: " . $e->getMessage());
+            return false;
+        }
     }
+
+    /* ===============================
+       UPDATE
+    =============================== */
 
     public function update(
         int $id,
@@ -91,11 +118,18 @@ class User
             return true;
 
         } catch (PDOException $e) {
+
             $this->pdo->rollBack();
+
+            error_log("User::update error: " . $e->getMessage());
+
             return false;
         }
     }
 
+    /* ===============================
+       DELETE
+    =============================== */
 
     public function delete(int $id): bool
     {
@@ -109,49 +143,65 @@ class User
             return true;
 
         } catch (PDOException $e) {
+
             $this->pdo->rollBack();
+
+            error_log("User::delete error: " . $e->getMessage());
+
             return false;
         }
     }
 
-
-
-
+    /* ===============================
+       LOGIN
+    =============================== */
 
     public function login(string $identifier, string $password): bool
     {
-        $stmt = $this->pdo->prepare(
-            "SELECT * FROM `user`
-             WHERE email = :email
-             OR lidnummer = :lidnummer
-             LIMIT 1"
-        );
-    
-        $stmt->execute([
-            'email'     => $identifier,
-            'lidnummer' => $identifier
-        ]);
-    
-        $user = $stmt->fetch();
-    
-        if (!$user) {
+        try {
+            $stmt = $this->pdo->prepare(
+                "SELECT * FROM `user`
+                 WHERE email = :email
+                 OR lidnummer = :lidnummer
+                 LIMIT 1"
+            );
+
+            $stmt->execute([
+                'email'     => $identifier,
+                'lidnummer' => $identifier
+            ]);
+
+            $user = $stmt->fetch();
+
+            if (!$user) {
+                error_log("Login failed: user not found ({$identifier})");
+                return false;
+            }
+
+            if (!password_verify($password, $user['password'])) {
+                error_log("Login failed: wrong password ({$identifier})");
+                return false;
+            }
+
+            session_regenerate_id(true);
+
+            $_SESSION['user_id']   = $user['id'];
+            $_SESSION['email']     = $user['email'];
+            $_SESSION['lidnummer'] = $user['lidnummer'];
+            $_SESSION['role']      = $user['userrol'];
+
+            return true;
+
+        } catch (PDOException $e) {
+
+            error_log("User::login error: " . $e->getMessage());
             return false;
         }
-    
-        if (!password_verify($password, $user['password'])) {
-            return false;
-        }
-    
-        session_regenerate_id(true);
-    
-        $_SESSION['user_id']   = $user['id'];
-        $_SESSION['email']     = $user['email'];
-        $_SESSION['lidnummer'] = $user['lidnummer'];
-        $_SESSION['role']      = $user['userrol'];
-    
-        return true;
     }
 
+    /* ===============================
+       LOGOUT
+    =============================== */
 
     public function logout(): void
     {
@@ -159,13 +209,10 @@ class User
         session_destroy();
     }
 
-
     public function isLoggedIn(): bool
     {
         return isset($_SESSION['user_id']);
     }
-
-
 
     public function currentUser(): array|null
     {
@@ -180,5 +227,4 @@ class User
             'role'      => $_SESSION['role']
         ];
     }
-        
 }

@@ -9,7 +9,10 @@ class Wedstrijden
         $this->pdo = $pdo;
     }
 
-    /* CREATE */
+    /* ===============================
+       CREATE
+    =============================== */
+
     public function create(
         int $wedstrijd_aanwezigen_id,
         int $club_id,
@@ -45,32 +48,60 @@ class Wedstrijden
             return true;
 
         } catch (PDOException $e) {
+
             $this->pdo->rollBack();
+            error_log("Wedstrijden::create error: " . $e->getMessage());
+
             return false;
         }
     }
 
-    /* READ ALL */
+    /* ===============================
+       READ ALL
+    =============================== */
+
     public function readAll(): array
     {
-        $stmt = $this->pdo->query(
-            "SELECT * FROM wedstrijden ORDER BY date DESC, start"
-        );
-        return $stmt->fetchAll();
+        try {
+            $stmt = $this->pdo->query(
+                "SELECT * FROM wedstrijden ORDER BY date DESC, start"
+            );
+
+            return $stmt->fetchAll();
+
+        } catch (PDOException $e) {
+
+            error_log("Wedstrijden::readAll error: " . $e->getMessage());
+            return [];
+        }
     }
 
-    /* READ ONE */
+    /* ===============================
+       READ ONE
+    =============================== */
+
     public function read(int $id): array|false
     {
-        $stmt = $this->pdo->prepare(
-            "SELECT * FROM wedstrijden WHERE id = :id"
-        );
-        $stmt->execute(['id' => $id]);
+        try {
+            $stmt = $this->pdo->prepare(
+                "SELECT * FROM wedstrijden WHERE id = :id"
+            );
 
-        return $stmt->fetch();
+            $stmt->execute(['id' => $id]);
+
+            return $stmt->fetch();
+
+        } catch (PDOException $e) {
+
+            error_log("Wedstrijden::read error: " . $e->getMessage());
+            return false;
+        }
     }
 
-    /* UPDATE */
+    /* ===============================
+       UPDATE
+    =============================== */
+
     public function update(
         int $id,
         int $wedstrijd_aanwezigen_id,
@@ -114,12 +145,18 @@ class Wedstrijden
             return true;
 
         } catch (PDOException $e) {
+
             $this->pdo->rollBack();
+            error_log("Wedstrijden::update error: " . $e->getMessage());
+
             return false;
         }
     }
 
-    /* DELETE */
+    /* ===============================
+       DELETE
+    =============================== */
+
     public function delete(int $id): bool
     {
         try {
@@ -128,13 +165,17 @@ class Wedstrijden
             $stmt = $this->pdo->prepare(
                 "DELETE FROM wedstrijden WHERE id = :id"
             );
+
             $stmt->execute(['id' => $id]);
 
             $this->pdo->commit();
             return true;
 
         } catch (PDOException $e) {
+
             $this->pdo->rollBack();
+            error_log("Wedstrijden::delete error: " . $e->getMessage());
+
             return false;
         }
     }

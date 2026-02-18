@@ -9,7 +9,10 @@ class Statistieken
         $this->pdo = $pdo;
     }
 
-    /* CREATE */
+    /* ===============================
+       CREATE
+    =============================== */
+
     public function create(int $goals, int $win, int $draw, int $loses): bool
     {
         try {
@@ -31,32 +34,60 @@ class Statistieken
             return true;
 
         } catch (PDOException $e) {
+
             $this->pdo->rollBack();
+            error_log("Statistieken::create error: " . $e->getMessage());
+
             return false;
         }
     }
 
-    /* READ ALL */
+    /* ===============================
+       READ ALL
+    =============================== */
+
     public function readAll(): array
     {
-        $stmt = $this->pdo->query(
-            "SELECT * FROM statistieken ORDER BY id DESC"
-        );
-        return $stmt->fetchAll();
+        try {
+            $stmt = $this->pdo->query(
+                "SELECT * FROM statistieken ORDER BY id DESC"
+            );
+
+            return $stmt->fetchAll();
+
+        } catch (PDOException $e) {
+
+            error_log("Statistieken::readAll error: " . $e->getMessage());
+            return [];
+        }
     }
 
-    /* READ ONE */
+    /* ===============================
+       READ ONE
+    =============================== */
+
     public function read(int $id): array|false
     {
-        $stmt = $this->pdo->prepare(
-            "SELECT * FROM statistieken WHERE id = :id"
-        );
-        $stmt->execute(['id' => $id]);
+        try {
+            $stmt = $this->pdo->prepare(
+                "SELECT * FROM statistieken WHERE id = :id"
+            );
 
-        return $stmt->fetch();
+            $stmt->execute(['id' => $id]);
+
+            return $stmt->fetch();
+
+        } catch (PDOException $e) {
+
+            error_log("Statistieken::read error: " . $e->getMessage());
+            return false;
+        }
     }
 
-    /* UPDATE */
+    /* ===============================
+       UPDATE
+    =============================== */
+
     public function update(
         int $id,
         int $goals,
@@ -88,12 +119,18 @@ class Statistieken
             return true;
 
         } catch (PDOException $e) {
+
             $this->pdo->rollBack();
+            error_log("Statistieken::update error: " . $e->getMessage());
+
             return false;
         }
     }
 
-    /* DELETE */
+    /* ===============================
+       DELETE
+    =============================== */
+
     public function delete(int $id): bool
     {
         try {
@@ -102,13 +139,17 @@ class Statistieken
             $stmt = $this->pdo->prepare(
                 "DELETE FROM statistieken WHERE id = :id"
             );
+
             $stmt->execute(['id' => $id]);
 
             $this->pdo->commit();
             return true;
 
         } catch (PDOException $e) {
+
             $this->pdo->rollBack();
+            error_log("Statistieken::delete error: " . $e->getMessage());
+
             return false;
         }
     }
