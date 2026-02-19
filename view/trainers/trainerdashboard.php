@@ -8,8 +8,8 @@ $connect = new Connect();
 $pdo = $connect->pdo();
 
 
-if (!isset($_SESSION['user_id'])) {
-    header("Location: ./view/login.php");
+if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'trainer') {
+    header("Location: ../login.php");
     exit;
 }
 

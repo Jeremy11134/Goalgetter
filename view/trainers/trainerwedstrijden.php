@@ -4,7 +4,9 @@ session_start();
 require_once __DIR__ . '/../../connect.php';
 require_once __DIR__ . '/../../app/wedstrijden.php';
 
-if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'trainer') {
+if (!isset($_SESSION['role']) || 
+    ($_SESSION['role'] !== 'trainer' && $_SESSION['role'] !== 'admin')) {
+
     header("Location: ../dashboard.php");
     exit;
 }
