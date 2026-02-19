@@ -342,4 +342,51 @@ class Speler
             return false;
         }
     }
+
+    
+        public function getGemiddeldeGoals(int $speler_id): float|false
+        {
+            try {
+
+                $stmt = $this->pdo->prepare(
+                    "SELECT statistieken_id
+                    FROM speler
+                    WHERE id = :id
+                    LIMIT 1"
+                );
+
+                $stmt->execute(['id' => $speler_id]);
+                $result = $stmt->fetch();
+
+                if (!$result) {
+                    error_log("Speler::getGemiddeldeGoals - speler niet gevonden");
+                    return false;
+                }
+
+                require_once 'Statistieken.php';
+                $statistieken = new Statistieken($this->pdo);
+
+                $stats = $statistieken->read((int)$result['statistieken_id']);
+
+                if (!$stats) {
+                    error_log("Speler::getGemiddeldeGoals - statistieken niet gevonden");
+                    return false;
+                }
+
+                $goals = (int)$stats['goals'];
+                $wedstrijden = (int)$stats['win'] + (int)$stats['draw'] + (int)$stats['loses'];
+
+                if ($wedstrijden === 0) {
+                    return 0.0;
+                }
+
+                $gemiddelde = $goals / $wedstrijden;
+
+                return round($gemiddelde, 2);
+
+            } catch (PDOException $e) {
+                error_log("Speler::getGemiddeldeGoals error: " . $e->getMessage());
+                return false;
+            }
+        }
 }

@@ -1,8 +1,8 @@
 <?php
 session_start();
-require_once 'connect.php';
-require_once './app/user.php';
 
+require_once __DIR__ . '/../connect.php';
+require_once __DIR__ . '/../app/user.php';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $inputCode = $_POST['code'] ?? '';
@@ -19,7 +19,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         unset($_SESSION['2fa_user_id']);
         unset($_SESSION['2fa_expires']);
 
-        header("Location: index.php");
+        header("Location: dashboard.php");
         exit;
 
     } else {

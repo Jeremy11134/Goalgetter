@@ -1,6 +1,7 @@
 <?php
-require_once 'connect.php';
-require_once './app/user.php';
+
+require_once __DIR__ . '/../connect.php';
+require_once __DIR__ . '/../app/user.php';
 
 $connect = new Connect();
 $pdo = $connect->pdo();
