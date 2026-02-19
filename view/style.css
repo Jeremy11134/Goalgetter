@@ -168,35 +168,3 @@ table th {
     background: #f5f5f5;
 }
 
-.btn-icon {
-    border: none;
-    border-radius: 50%;
-    width: 35px;
-    height: 35px;
-    cursor: pointer;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: bold;
-    transition: all 0.2s;
-}
-
-.btn-plus {
-    background: #27ae60;
-    color: white;
-}
-
-.btn-plus:hover {
-    background: #229954;
-    transform: scale(1.1);
-}
-
-.btn-minus {
-    background: #c0392b;
-    color: white;
-}
-
-.btn-minus:hover {
-    background: #a93226;
-    transform: scale(1.1);
-}

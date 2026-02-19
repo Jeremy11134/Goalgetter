@@ -187,9 +187,9 @@ public function login(string $identifier, string $password): bool
         $code = random_int(1000, 9999);
 
         $_SESSION['2fa_user_id'] = $user['id'];
-        $_SESSION['2fa_code'] = $code;
-        $_SESSION['2fa_expires'] = time() + 300; 
-
+        $_SESSION['2fa_role']    = $user['userrol'];   // 👈 BELANGRIJK
+        $_SESSION['2fa_code']    = $code;
+        $_SESSION['2fa_expires'] = time() + 300;
 
         $this->send2FA($user['email'], $code);
 

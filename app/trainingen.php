@@ -13,52 +13,48 @@ class Trainingen
        CREATE
     =============================== */
 
-    public function create(
-        int $training_aanwezigen_id,
-        string $start,
-        string $end,
-        string $titel,
-        string $date,
-        ?string $description,
-        string $status
-    ): bool {
+public function create(
+    string $start,
+    string $end,
+    string $titel,
+    string $date,
+    ?string $description,
+    string $status
+): bool {
 
-        if ($this->trainingControle($date, $start, $end)) {
-            error_log("Trainingen::create blocked - overlapping training detected ({$date} {$start}-{$end})");
-            return false;
-        }
-
-        try {
-            $this->pdo->beginTransaction();
-
-            $stmt = $this->pdo->prepare(
-                "INSERT INTO trainingen
-                (training_aanwezigen_id, start, end, titel, date, description, status)
-                VALUES
-                (:training_aanwezigen_id, :start, :end, :titel, :date, :description, :status)"
-            );
-
-            $stmt->execute([
-                'training_aanwezigen_id' => $training_aanwezigen_id,
-                'start'                  => $start,
-                'end'                    => $end,
-                'titel'                  => $titel,
-                'date'                   => $date,
-                'description'            => $description,
-                'status'                 => $status
-            ]);
-
-            $this->pdo->commit();
-            return true;
-
-        } catch (PDOException $e) {
-
-            $this->pdo->rollBack();
-            error_log("Trainingen::create error: " . $e->getMessage());
-
-            return false;
-        }
+    if ($this->trainingControle($date, $start, $end)) {
+        die("Overlap gedetecteerd");
     }
+
+    try {
+        $this->pdo->beginTransaction();
+
+        $stmt = $this->pdo->prepare(
+            "INSERT INTO trainingen
+            (start, end, titel, date, description, status)
+            VALUES
+            (:start, :end, :titel, :date, :description, :status)"
+        );
+
+        $stmt->execute([
+            'start'       => $start,
+            'end'         => $end,
+            'titel'       => $titel,
+            'date'        => $date,
+            'description' => $description,
+            'status'      => $status
+        ]);
+
+        $this->pdo->commit();
+        return true;
+
+    } catch (PDOException $e) {
+
+        $this->pdo->rollBack();
+        die($e->getMessage()); // tijdelijk voor debug
+
+    }
+}
 
     /* ===============================
        READ ALL
@@ -108,7 +104,7 @@ class Trainingen
 
     public function update(
         int $id,
-        int $training_aanwezigen_id,
+        ?int $training_aanwezigen_id,
         string $start,
         string $end,
         string $titel,
@@ -185,35 +181,35 @@ class Trainingen
        TRAINING CONTROLE
     =============================== */
 
-    public function trainingControle(
-        string $date,
-        string $start,
-        string $end
-    ): bool {
+public function trainingControle(
+    string $date,
+    string $start,
+    string $end
+): bool {
 
-        try {
-            $stmt = $this->pdo->prepare(
-                "SELECT COUNT(*) FROM trainingen
-                 WHERE date = :date
-                 AND (
-                        (:start < end)
-                        AND
-                        (:end > start)
-                     )"
-            );
+    try {
+        $stmt = $this->pdo->prepare(
+            "SELECT COUNT(*) FROM trainingen
+             WHERE date = :date
+             AND (
+                    (:start < `end`)
+                    AND
+                    (:end > `start`)
+                 )"
+        );
 
-            $stmt->execute([
-                'date'  => $date,
-                'start' => $start,
-                'end'   => $end
-            ]);
+        $stmt->execute([
+            'date'  => $date,
+            'start' => $start,
+            'end'   => $end
+        ]);
 
-            return $stmt->fetchColumn() > 0;
+        return $stmt->fetchColumn() > 0;
 
-        } catch (PDOException $e) {
+    } catch (PDOException $e) {
 
-            error_log("Trainingen::trainingControle error: " . $e->getMessage());
-            return false;
-        }
+        error_log("Trainingen::trainingControle error: " . $e->getMessage());
+        return false;
     }
+}
 }
