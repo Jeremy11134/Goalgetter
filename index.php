@@ -1,20 +1,34 @@
 <?php
-session_start();
+require_once 'connect.php';
+require_once './app/user.php';
 
-require_once "connect.php";
-require_once "./app/speler.php";
+$connect = new Connect();
+$pdo = $connect->pdo();
 
-$db = new Connect();
-$pdo = $db->pdo();
+$user = new User($pdo);
 
-/* Fake login als speler */
-$_SESSION['role'] = 'speler';
-$_SESSION['user_id'] = 2;
+if (!$user->isLoggedIn()) {
+    header("Location: login.php");
+    exit;
+}
 
-$speler = new Speler($pdo);
+$currentUser = $user->currentUser();
+?>
 
-/* Training aanmelden */
-$speler->meldAanwezigheid('training', 1, 'afwezig');
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Dashboard</title>
+</head>
+<body>
 
-/* Wedstrijd afmelden */
-$speler->meldAanwezigheid('wedstrijd', 3, 'aanwezig');
+<h2>Welkom <?= htmlspecialchars($currentUser['email']) ?></h2>
+
+<p>Rol: <?= $currentUser['role'] ?></p>
+
+<form method="POST" action="login.php">
+    <button type="submit">Logout</button>
+</form>
+
+</body>
+</html>

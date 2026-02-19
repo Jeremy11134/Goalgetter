@@ -1,4 +1,6 @@
 <?php
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
 
 class User
 {
@@ -154,51 +156,50 @@ class User
 
     /* ===============================
        LOGIN
-    =============================== */
+    =============================== */ 
 
-    public function login(string $identifier, string $password): bool
-    {
-        try {
-            $stmt = $this->pdo->prepare(
-                "SELECT * FROM `user`
-                 WHERE email = :email
-                 OR lidnummer = :lidnummer
-                 LIMIT 1"
-            );
+public function login(string $identifier, string $password): bool
+{
+    try {
+        $stmt = $this->pdo->prepare(
+            "SELECT * FROM `user`
+             WHERE email = :email
+             OR lidnummer = :lidnummer
+             LIMIT 1"
+        );
 
-            $stmt->execute([
-                'email'     => $identifier,
-                'lidnummer' => $identifier
-            ]);
+        $stmt->execute([
+            'email'     => $identifier,
+            'lidnummer' => $identifier
+        ]);
 
-            $user = $stmt->fetch();
+        $user = $stmt->fetch();
 
-            if (!$user) {
-                error_log("Login failed: user not found ({$identifier})");
-                return false;
-            }
-
-            if (!password_verify($password, $user['password'])) {
-                error_log("Login failed: wrong password ({$identifier})");
-                return false;
-            }
-
-            session_regenerate_id(true);
-
-            $_SESSION['user_id']   = $user['id'];
-            $_SESSION['email']     = $user['email'];
-            $_SESSION['lidnummer'] = $user['lidnummer'];
-            $_SESSION['role']      = $user['userrol'];
-
-            return true;
-
-        } catch (PDOException $e) {
-
-            error_log("User::login error: " . $e->getMessage());
+        if (!$user) {
             return false;
         }
-    }
 
+        if (!password_verify($password, $user['password'])) {
+            return false;
+        }
+
+
+        $code = random_int(1000, 9999);
+
+        $_SESSION['2fa_user_id'] = $user['id'];
+        $_SESSION['2fa_code'] = $code;
+        $_SESSION['2fa_expires'] = time() + 300; 
+
+
+        $this->send2FA($user['email'], $code);
+
+        return true;
+
+    } catch (PDOException $e) {
+        error_log("User::login error: " . $e->getMessage());
+        return false;
+    }
+}
     /* ===============================
        LOGOUT
     =============================== */
@@ -214,17 +215,48 @@ class User
         return isset($_SESSION['user_id']);
     }
 
-    public function currentUser(): array|null
+    public function currentUser(): ?array
     {
         if (!$this->isLoggedIn()) {
             return null;
         }
 
         return [
-            'id'        => $_SESSION['user_id'],
-            'email'     => $_SESSION['email'],
-            'lidnummer' => $_SESSION['lidnummer'],
-            'role'      => $_SESSION['role']
+            'id'        => $_SESSION['user_id']   ?? null,
+            'email'     => $_SESSION['email']     ?? null,
+            'lidnummer' => $_SESSION['lidnummer'] ?? null,
+            'role'      => $_SESSION['role']      ?? null
         ];
     }
+
+
+private function send2FA(string $email, int $code): void
+{
+    require_once __DIR__ . '/../vendor/autoload.php';
+
+    $mail = new PHPMailer(true);
+
+    try {
+
+        $mail->isSMTP();
+        $mail->Host       = 'smtp.gmail.com';
+        $mail->SMTPAuth   = true;
+        $mail->Username   = 'jeremyversteeg37@gmail.com';
+        $mail->Password   = 'mboj hokm xpvs qnok';
+        $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+        $mail->Port       = 587;
+
+        $mail->setFrom('jeremyversteeg37@gmail.com', 'GoalGetter');
+        $mail->addAddress($email);
+
+        $mail->Subject = 'Jouw 2FA Code';
+        $mail->Body    = "Jouw verificatiecode is: $code";
+
+        $mail->send();
+
+    } catch (Exception $e) {
+        error_log("Mail error: " . $mail->ErrorInfo);
+    }
+}
+
 }

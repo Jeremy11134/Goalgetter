@@ -130,67 +130,72 @@ class Ouders
        REGISTER OUDER
     =============================== */
 
-    public function registerouder(
-        string $voornaam,
-        ?string $tussenvoegsels,
-        string $achternaam,
-        string $email,
-        string $password,
-        string $lidnummer
-    ): bool {
+public function registerouder(
+    string $voornaam,
+    ?string $tussenvoegsels,
+    string $achternaam,
+    string $email,
+    string $password
+): bool {
 
-        try {
-            $this->pdo->beginTransaction();
+    try {
 
-            /* Person */
-            $stmtPerson = $this->pdo->prepare(
-                "INSERT INTO person (voornaam, tussenvoegsels, achternaam)
-                 VALUES (:voornaam, :tussenvoegsels, :achternaam)"
-            );
+        $this->pdo->beginTransaction();
 
-            $stmtPerson->execute([
-                'voornaam'       => $voornaam,
-                'tussenvoegsels' => $tussenvoegsels ?? '',
-                'achternaam'     => $achternaam
-            ]);
+        /* 1️⃣ Person aanmaken */
+        $stmtPerson = $this->pdo->prepare(
+            "INSERT INTO person (voornaam, tussenvoegsels, achternaam)
+             VALUES (:voornaam, :tussenvoegsels, :achternaam)"
+        );
 
-            $person_id = $this->pdo->lastInsertId();
+        $stmtPerson->execute([
+            'voornaam'       => $voornaam,
+            'tussenvoegsels' => $tussenvoegsels ?? '',
+            'achternaam'     => $achternaam
+        ]);
 
-            /* User */
-            $stmtUser = $this->pdo->prepare(
-                "INSERT INTO user (email, userrol, password, lidnummer)
-                 VALUES (:email, :userrol, :password, :lidnummer)"
-            );
+        $person_id = $this->pdo->lastInsertId();
 
-            $stmtUser->execute([
-                'email'     => $email,
-                'userrol'   => 'ouder',
-                'password'  => password_hash($password, PASSWORD_DEFAULT),
-                'lidnummer' => $lidnummer
-            ]);
 
-            $user_id = $this->pdo->lastInsertId();
+        /* 2️⃣ Uniek lidnummer genereren */
+        $lidnummer = 'LID-' . strtoupper(substr(uniqid(), -6));
 
-            /* Ouder */
-            $stmtOuder = $this->pdo->prepare(
-                "INSERT INTO ouders (user_id, person_id)
-                 VALUES (:user_id, :person_id)"
-            );
 
-            $stmtOuder->execute([
-                'user_id'   => $user_id,
-                'person_id' => $person_id
-            ]);
+        /* 3️⃣ User aanmaken */
+        $stmtUser = $this->pdo->prepare(
+            "INSERT INTO `user` (email, userrol, password, lidnummer)
+             VALUES (:email, :userrol, :password, :lidnummer)"
+        );
 
-            $this->pdo->commit();
-            return true;
+        $stmtUser->execute([
+            'email'     => $email,
+            'userrol'   => 'ouder',
+            'password'  => password_hash($password, PASSWORD_DEFAULT),
+            'lidnummer' => $lidnummer
+        ]);
 
-        } catch (PDOException $e) {
+        $user_id = $this->pdo->lastInsertId();
 
-            $this->pdo->rollBack();
-            error_log("Ouders::registerouder error: " . $e->getMessage());
 
-            return false;
-        }
+        /* 4️⃣ Ouder koppelen */
+        $stmtOuder = $this->pdo->prepare(
+            "INSERT INTO ouders (user_id, person_id)
+             VALUES (:user_id, :person_id)"
+        );
+
+        $stmtOuder->execute([
+            'user_id'   => $user_id,
+            'person_id' => $person_id
+        ]);
+
+        $this->pdo->commit();
+        return true;
+
+    } catch (PDOException $e) {
+
+        $this->pdo->rollBack();
+        error_log("Ouders::registerouder error: " . $e->getMessage());
+        return false;
     }
+}
 }
