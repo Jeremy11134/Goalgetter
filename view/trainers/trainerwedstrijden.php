@@ -77,6 +77,7 @@ $wedstrijden = $wedstrijdenClass->readAll();
         <a href="trainerwedstrijden.php" class="active">Wedstrijden</a>
         <a href="trainertrainingen.php">Trainingen</a>
         <a href="trainerleden.php">Leden</a>
+        <a href="../login.php">Logout</a>
     </div>
 
     <div class="content">

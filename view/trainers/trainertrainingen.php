@@ -88,6 +88,7 @@ $trainingen = $trainingenClass->readAll();
         <a href="trainerwedstrijden.php">Wedstrijden</a>
         <a href="trainertrainingen.php" class="active">Trainingen</a>
         <a href="trainerleden.php">Leden</a>
+        <a href="../login.php">Logout</a>
     </div>
 
     <div class="content">

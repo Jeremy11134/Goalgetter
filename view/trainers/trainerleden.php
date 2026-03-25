@@ -114,6 +114,7 @@ if (isset($_POST['update_stats'])) {
         <a href="trainerwedstrijden.php">Wedstrijden</a>
         <a href="trainertrainingen.php">Trainingen</a>
         <a href="trainerleden.php" class="active">Leden</a>
+        <a href="../login.php">Logout</a>
     </div>
 
     <div class="content">
