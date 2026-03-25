@@ -2,6 +2,7 @@
 
 require_once __DIR__ . '/../connect.php';
 require_once __DIR__ . '/../app/user.php';
+require_once __DIR__ . '/../app/ouders.php';  
 
 $connect = new Connect();
 $pdo = $connect->pdo();
@@ -72,7 +73,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <button type="submit">Registreren</button>
 </form>
 
-<p>Al een account? <a href="./view/login.php">Login hier</a></p>
+<p>Al een account? <a href="login.php">Login hier</a></p>
 
 </body>
 </html>

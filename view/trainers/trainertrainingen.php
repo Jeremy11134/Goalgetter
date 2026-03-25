@@ -15,6 +15,7 @@ $connect = new Connect();
 $pdo = $connect->pdo();
 $description = $_POST['description'] ?? '';
 $trainingenClass = new Trainingen($pdo);
+$error = '';
 
 /* DELETE */
 if (isset($_GET['delete'])) {
@@ -45,18 +46,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             null,
             $status
         );
-    } else {
-    $trainingenClass->create(
-        $start,
-        $end,
-        $titel,
-        $date,
-        $description,
-        $status
-    );
+} else {
+
+$result = $trainingenClass->create(
+    $start,
+    $end,
+    $titel,
+    $date,
+    $description,
+    $status
+);
+
+if (!$result) {
+
+    $error = "Er bestaat al een training op deze datum en tijd.";
+
+} else {
 
     header("Location: trainertrainingen.php");
     exit;
+
+}
 }
 }
 
@@ -86,6 +96,12 @@ $trainingen = $trainingenClass->readAll();
             <h2>Trainingen Beheren</h2>
             <button class="btn-add" onclick="openAddModal()">+</button>
         </div>
+
+        <?php if (!empty($error)): ?>
+            <div class="error">
+                <?= $error ?>
+            </div>
+            <?php endif; ?>
 
         <table class="wedstrijd-table">
             <thead>

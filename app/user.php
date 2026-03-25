@@ -239,10 +239,17 @@ private function send2FA(string $email, int $code): void
     try {
 
         $mail->isSMTP();
+        $mail->SMTPOptions = [
+    'ssl' => [
+        'verify_peer'       => false,
+        'verify_peer_name'  => false,
+        'allow_self_signed' => true,
+    ],
+];
         $mail->Host       = 'smtp.gmail.com';
         $mail->SMTPAuth   = true;
         $mail->Username   = 'jeremyversteeg37@gmail.com';
-        $mail->Password   = 'mboj hokm xpvs qnok';
+        $mail->Password   = 'novz figa vdxd kzjc';
         $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
         $mail->Port       = 587;
 
@@ -254,9 +261,11 @@ private function send2FA(string $email, int $code): void
 
         $mail->send();
 
-    } catch (Exception $e) {
-        error_log("Mail error: " . $mail->ErrorInfo);
-    }
-}
 
+    } 
+catch (Exception $e) {
+    echo "Mailer Error: " . $mail->ErrorInfo;
+    exit;
+}
+}
 }

@@ -44,10 +44,10 @@ $aantalTrainingen = $stmt->fetchColumn();
     <a href="admindashboard.php" class="active">Dashboard</a>
     <a href="adminleden.php">Leden</a>
 
-    <a href="../trainers/trainerwedstrijden.php">Wedstrijden</a>
-    <a href="../trainers/trainertrainingen.php">Trainingen</a>
+    <a href="adminwedstrijden.php">Wedstrijden</a>
+    <a href="admintrainingen.php">Trainingen</a>
 
-    <a href="../../logout.php">Uitloggen</a>
+    <a href="../login.php">Uitloggen</a>
 </div>
 
     <div class="content">

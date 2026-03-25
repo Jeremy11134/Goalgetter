@@ -348,3 +348,10 @@ form button {
     padding: 8px;
 }
 
+.error{
+    background:#ffdede;
+    color:#a40000;
+    padding:10px;
+    border-radius:6px;
+    margin-bottom:15px;
+}

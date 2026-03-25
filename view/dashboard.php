@@ -68,7 +68,7 @@ $topSpelers = $stmt->fetchAll();
         <a href="wedstrijden.php">Wedstrijden</a>
         <a href="trainingen.php">Trainingen</a>
         <a href="leden.php">Leden</a>
-        <a href="logout.php">Logout</a>
+        <a href="login.php">Logout</a>
     </div>
 
     <!-- 🟢 Content -->

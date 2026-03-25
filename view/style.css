@@ -248,3 +248,11 @@ table th {
     cursor: pointer;
     margin-bottom: 10px;
 }
+
+.error{
+    background:#ffdede;
+    color:#a40000;
+    padding:10px;
+    border-radius:6px;
+    margin-bottom:15px;
+}

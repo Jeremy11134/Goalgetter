@@ -23,7 +23,7 @@ public function create(
 ): bool {
 
     if ($this->trainingControle($date, $start, $end)) {
-        die("Overlap gedetecteerd");
+        return false; // Er is al een training op dit tijdstip
     }
 
     try {
