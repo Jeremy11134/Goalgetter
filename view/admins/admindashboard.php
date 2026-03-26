@@ -11,49 +11,46 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'club_admin') {
 $connect = new Connect();
 $pdo = $connect->pdo();
 
-/* Aantal spelers */
-$stmt = $pdo->query("SELECT COUNT(*) FROM speler");
-$aantalSpelers = $stmt->fetchColumn();
-
-/* Aantal trainers */
-$stmt = $pdo->query("SELECT COUNT(*) FROM trainer");
-$aantalTrainers = $stmt->fetchColumn();
-
-/* Aantal wedstrijden */
-$stmt = $pdo->query("SELECT COUNT(*) FROM wedstrijden");
-$aantalWedstrijden = $stmt->fetchColumn();
-
-/* Aantal trainingen */
-$stmt = $pdo->query("SELECT COUNT(*) FROM trainingen");
-$aantalTrainingen = $stmt->fetchColumn();
+/* Counts */
+$aantalSpelers     = $pdo->query("SELECT COUNT(*) FROM speler")->fetchColumn();
+$aantalTrainers    = $pdo->query("SELECT COUNT(*) FROM trainer")->fetchColumn();
+$aantalWedstrijden = $pdo->query("SELECT COUNT(*) FROM wedstrijden")->fetchColumn();
+$aantalTrainingen  = $pdo->query("SELECT COUNT(*) FROM trainingen")->fetchColumn();
 ?>
 
 <!DOCTYPE html>
 <html>
 <head>
     <title>Admin Dashboard</title>
-    <link rel="stylesheet" href="../view/style.css">
+    <link rel="stylesheet" href="../style.css">
 </head>
 <body>
 
 <div class="layout">
 
-<div class="sidebar">
-    <h2>Admin Menu</h2>
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+        <h2>Admin Menu</h2>
 
-    <a href="admindashboard.php" class="active">Dashboard</a>
-    <a href="adminleden.php">Leden</a>
+        <a href="admindashboard.php" class="active">Dashboard</a>
+        <a href="adminleden.php">Leden</a>
+        <a href="adminwedstrijden.php">Wedstrijden</a>
+        <a href="admintrainingen.php">Trainingen</a>
 
-    <a href="adminwedstrijden.php">Wedstrijden</a>
-    <a href="admintrainingen.php">Trainingen</a>
+        <a href="../login.php">Uitloggen</a>
+    </div>
 
-    <a href="../login.php">Uitloggen</a>
-</div>
-
+    <!-- CONTENT -->
     <div class="content">
 
-        <h2>Welkom Admin 👑</h2>
+        <!-- ✅ Zelfde header structuur -->
+        <div class="header-row">
+            <h2>Dashboard</h2>
+        </div>
 
+        <p style="margin-bottom:20px;">Welkom Admin 👑</p>
+
+        <!-- ✅ Grid zoals andere pagina's -->
         <div class="dashboard-grid">
 
             <div class="dashboard-card">

@@ -5,7 +5,7 @@ require_once __DIR__ . '/../../connect.php';
 require_once __DIR__ . '/../../app/speler.php';
 require_once __DIR__ . '/../../app/trainer.php';
 
-if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
+if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'club_admin') {
     header("Location: ../dashboard.php");
     exit;
 }
@@ -16,27 +16,21 @@ $pdo = $connect->pdo();
 $spelerClass  = new Speler($pdo);
 $trainerClass = new Trainer($pdo);
 
-/* =========================
-   DELETE TRAINER
-========================= */
+
 if (isset($_GET['delete_trainer'])) {
     $trainerClass->delete((int)$_GET['delete_trainer']);
     header("Location: adminleden.php");
     exit;
 }
 
-/* =========================
-   DELETE SPELER
-========================= */
+
 if (isset($_GET['delete_speler'])) {
     $spelerClass->delete((int)$_GET['delete_speler']);
     header("Location: adminleden.php");
     exit;
 }
 
-/* =========================
-   ADD TRAINER
-========================= */
+
 if (isset($_POST['add_trainer'])) {
 
     $trainerClass->registerTrainer(
@@ -52,9 +46,7 @@ if (isset($_POST['add_trainer'])) {
     exit;
 }
 
-/* =========================
-   ADD SPELER
-========================= */
+
 if (isset($_POST['add_speler'])) {
 
     $spelerClass->registerspeler(
@@ -71,9 +63,7 @@ if (isset($_POST['add_speler'])) {
     exit;
 }
 
-/* =========================
-   UPDATE STATISTIEKEN
-========================= */
+
 if (isset($_POST['update_stats'])) {
 
     $stmt = $pdo->prepare("
@@ -97,9 +87,7 @@ if (isset($_POST['update_stats'])) {
     exit;
 }
 
-/* =========================
-   DATA OPHALEN
-========================= */
+
 
 $trainers = $pdo->query("
     SELECT t.id, p.voornaam, p.tussenvoegsels, p.achternaam
@@ -129,7 +117,7 @@ $spelers = $pdo->query("
 <html>
 <head>
     <title>Admin - Leden</title>
-    <link rel="stylesheet" href="admins/style.css">
+    <link rel="stylesheet" href="/Goalgetter/view/trainers/style.css">
 </head>
 <body>
 
@@ -138,8 +126,10 @@ $spelers = $pdo->query("
     <div class="sidebar">
         <h2>Admin Menu</h2>
         <a href="admindashboard.php">Dashboard</a>
-        <a href="adminleden.php" class="active">Leden</a>
-        <a href="../../logout.php">Uitloggen</a>
+        <a href="adminleden.php">Leden</a>
+        <a href="adminwedstrijden.php">Wedstrijden</a>
+        <a href="admintrainingen.php" class="active">Trainingen</a>
+        <a href="../login.php">Uitloggen</a>
     </div>
 
     <div class="content">
