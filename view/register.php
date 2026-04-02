@@ -44,7 +44,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 </head>
 <body>
 
-<h2>Registreren</h2>
 
 <?php if ($error): ?>
     <p style="color:red;"><?= $error ?></p>
@@ -56,6 +55,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 <div class="register-container">
 <form method="POST">
+    <h2>Registreren</h2>
 
     <label>Voornaam:</label><br>
     <input type="text" name="voornaam" required><br><br>

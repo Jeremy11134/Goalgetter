@@ -6,7 +6,11 @@ require_once __DIR__ . '/../app/user.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
-    $inputCode = $_POST['code'] ?? '';
+   $inputCode =
+    ($_POST['code1'] ?? '') .
+    ($_POST['code2'] ?? '') .
+    ($_POST['code3'] ?? '') .
+    ($_POST['code4'] ?? '');
 
     if (
         isset($_SESSION['2fa_code']) &&
@@ -44,7 +48,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <!DOCTYPE html>
 <html>
 <head>
-    <title>2FA Verificatie</title>
+     <link rel="stylesheet" href="/Goalgetter/view/verify.css">
 </head>
 <body>
 
@@ -52,12 +56,36 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <h2>Voer 2FA code in</h2>
 
     <?php if (!empty($error)): ?>
-        <p style="color:red;"><?= $error ?></p>
+        <p class="error"><?= $error ?></p>
     <?php endif; ?>
 
-    <input type="text" name="code" maxlength="4" required>
+    <div class="code-inputs">
+        <input type="text" maxlength="1" name="code1" required>
+        <input type="text" maxlength="1" name="code2" required>
+        <input type="text" maxlength="1" name="code3" required>
+        <input type="text" maxlength="1" name="code4" required>
+    </div>
+
     <button type="submit">Verifiëren</button>
 </form>
+
+<script>
+    const inputs = document.querySelectorAll('.code-inputs input');
+
+    inputs.forEach((input, index) => {
+        input.addEventListener('input', () => {
+            if (input.value && index < inputs.length - 1) {
+                inputs[index + 1].focus();
+            }
+        });
+
+        input.addEventListener('keydown', (e) => {
+            if (e.key === "Backspace" && !input.value && index > 0) {
+                inputs[index - 1].focus();
+            }
+        });
+    });
+</script>
 
 </body>
 </html>
