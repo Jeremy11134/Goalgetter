@@ -1,8 +1,8 @@
 <?php
 session_start();
 
-require_once __DIR__ . '/../connect.php';
-require_once __DIR__ . '/../app/user.php';
+require_once __DIR__ . '/../../connect.php';
+require_once __DIR__ . '/../../app/user.php';
 
 $connect = new Connect();
 $pdo = $connect->pdo();
@@ -68,7 +68,7 @@ $topSpelers = $stmt->fetchAll();
         <a href="wedstrijden.php">Wedstrijden</a>
         <a href="trainingen.php">Trainingen</a>
         <a href="leden.php">Leden</a>
-        <a href="login.php">Logout</a>
+        <a href="../login.php">Logout</a>
     </div>
 
     <!-- 🟢 Content -->

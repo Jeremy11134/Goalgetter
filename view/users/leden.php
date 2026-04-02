@@ -1,8 +1,8 @@
 <?php
 session_start();
 
-require_once __DIR__ . '/../connect.php';
-require_once __DIR__ . '/../app/speler.php';
+require_once __DIR__ . '/../../connect.php';
+require_once __DIR__ . '/../../app/speler.php';
 
 $connect = new Connect();
 $pdo = $connect->pdo();
@@ -51,6 +51,7 @@ $trainers = $stmt->fetchAll();
         <a href="wedstrijden.php">Wedstrijden</a>
         <a href="trainingen.php">Trainingen</a>
         <a href="leden.php" class="active">Leden</a>
+        <a href="../login.php">Logout</a>
     </div>
 
     <div class="content">

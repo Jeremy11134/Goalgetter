@@ -29,6 +29,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <html>
 <head>
     <title>Login</title>
+     <link rel="stylesheet" href="/Goalgetter/view/login.css">
 </head>
 <body>
 
@@ -38,17 +39,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <p style="color:red;"><?= $error ?></p>
 <?php endif; ?>
 
-<form method="POST">
-    <label>Email of Lidnummer:</label><br>
-    <input type="text" name="identifier" required><br><br>
+<div class="login-container">
+    <form method="POST">
+        <label>Email of Lidnummer:</label><br>
+        <input type="text" name="identifier" required><br><br>
 
-    <label>Wachtwoord:</label><br>
-    <input type="password" name="password" required><br><br>
+        <label>Wachtwoord:</label><br>
+        <input type="password" name="password" required><br><br>
 
-    <button type="submit">Login</button>
-</form>
+        <button type="submit">Login</button>
 
-<p>Nog geen account? <a href="register.php">Registreer hier</a></p>
+        <div class="extra-links">
+            <a href="register.php">Nog geen account? Registreer</a>
+        </div>
+    </form>
+</div>
 
 </body>
 </html>

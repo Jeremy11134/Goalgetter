@@ -1,0 +1,128 @@
+.register-container {
+    text-align: center;
+}
+
+/* Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+}
+
+/* Achtergrond */
+body {
+    background: linear-gradient(135deg, #4facfe, #00f2fe);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Titel */
+h2 {
+    position: absolute;
+    top: 60px;
+    color: white;
+    font-size: 28px;
+}
+
+/* Container */
+form {
+    background: #ffffff;
+    padding: 30px;
+    border-radius: 12px;
+    width: 350px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+}
+
+/* Labels */
+label {
+    font-size: 14px;
+    color: #333;
+}
+
+/* Inputs */
+input {
+    width: 100%;
+    padding: 10px;
+    margin-top: 5px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    transition: 0.3s;
+}
+
+input:focus {
+    border-color: #4facfe;
+    outline: none;
+    box-shadow: 0 0 5px rgba(79, 172, 254, 0.5);
+}
+
+/* Button */
+button {
+    width: 100%;
+    padding: 12px;
+    background: #4facfe;
+    border: none;
+    border-radius: 8px;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+button:hover {
+    background: #00c6ff;
+}
+
+/* Berichten */
+p {
+    text-align: center;
+    margin-top: 10px;
+    font-size: 14px;
+}
+
+/* Links */
+a {
+    color: #4facfe;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+/* Error / success */
+p[style*="red"] {
+    color: red;
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+p[style*="green"] {
+    color: green;
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+/* Extra links onder knop */
+.extra-links {
+    margin-top: 15px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.extra-links a {
+    font-size: 14px;
+    color: #4facfe;
+    text-decoration: none;
+    transition: 0.2s;
+}
+
+.extra-links a:hover {
+    text-decoration: underline;
+    color: #0077ff;
+}

@@ -30,7 +30,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         } elseif ($_SESSION['role'] === 'club_admin') {
             header("Location: /Goalgetter/view/admins/admindashboard.php");
         } else {
-            header("Location: dashboard.php");
+            header("Location: /Goalgetter/view/users/dashboard.php");
         }
 
         exit;
