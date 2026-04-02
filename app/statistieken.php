@@ -9,10 +9,7 @@ class Statistieken
         $this->pdo = $pdo;
     }
 
-    /* ===============================
-       CREATE
-    =============================== */
-
+    /** Nieuwe statistiekenrij (doelpunten, W/G/V). */
     public function create(int $goals, int $win, int $draw, int $loses): bool
     {
         try {
@@ -42,10 +39,7 @@ class Statistieken
         }
     }
 
-    /* ===============================
-       READ ALL
-    =============================== */
-
+    /** Alle statistiekrecords. */
     public function readAll(): array
     {
         try {
@@ -62,10 +56,7 @@ class Statistieken
         }
     }
 
-    /* ===============================
-       READ ONE
-    =============================== */
-
+    /** Eén record op id. */
     public function read(int $id): array|false
     {
         try {
@@ -84,10 +75,7 @@ class Statistieken
         }
     }
 
-    /* ===============================
-       UPDATE
-    =============================== */
-
+    /** Werkt tellingen bij. */
     public function update(
         int $id,
         int $goals,
@@ -127,10 +115,7 @@ class Statistieken
         }
     }
 
-    /* ===============================
-       DELETE
-    =============================== */
-
+    /** Verwijdert een statistiekenrij. */
     public function delete(int $id): bool
     {
         try {

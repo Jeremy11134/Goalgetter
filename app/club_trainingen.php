@@ -9,10 +9,7 @@ class ClubTrainingen
         $this->pdo = $pdo;
     }
 
-    /* ===============================
-       CREATE
-    =============================== */
-
+    /** Koppelt een club aan een training. */
     public function create(int $club_id, int $training_id): bool
     {
         try {
@@ -40,10 +37,7 @@ class ClubTrainingen
         }
     }
 
-    /* ===============================
-       READ ALL
-    =============================== */
-
+    /** Alle koppelingen. */
     public function readAll(): array
     {
         try {
@@ -60,10 +54,7 @@ class ClubTrainingen
         }
     }
 
-    /* ===============================
-       READ ONE
-    =============================== */
-
+    /** Eén koppelrecord. */
     public function read(int $id): array|false
     {
         try {
@@ -82,10 +73,7 @@ class ClubTrainingen
         }
     }
 
-    /* ===============================
-       UPDATE
-    =============================== */
-
+    /** Wijzigt club of training op de koppeling. */
     public function update(int $id, int $club_id, int $training_id): bool
     {
         try {
@@ -116,10 +104,7 @@ class ClubTrainingen
         }
     }
 
-    /* ===============================
-       DELETE
-    =============================== */
-
+    /** Verwijdert de koppeling. */
     public function delete(int $id): bool
     {
         try {

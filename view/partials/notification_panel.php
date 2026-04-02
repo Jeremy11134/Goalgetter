@@ -1,5 +1,4 @@
 <?php
-
 /** @var PDO $pdo */
 
 if (!isset($pdo) || !isset($_SESSION['user_id'])) {

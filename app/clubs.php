@@ -9,10 +9,7 @@ class Clubs
         $this->pdo = $pdo;
     }
 
-    /* ===============================
-       CREATE
-    =============================== */
-
+    /** Voegt een club toe. */
     public function create(string $naam): bool
     {
         try {
@@ -36,10 +33,7 @@ class Clubs
         }
     }
 
-    /* ===============================
-       READ ALL
-    =============================== */
-
+    /** Alle clubs, alfabetisch op naam. */
     public function readAll(): array
     {
         try {
@@ -56,10 +50,7 @@ class Clubs
         }
     }
 
-    /* ===============================
-       READ ONE
-    =============================== */
-
+    /** Eén club op id, of false bij fout. */
     public function read(int $id): array|false
     {
         try {
@@ -78,10 +69,7 @@ class Clubs
         }
     }
 
-    /* ===============================
-       UPDATE
-    =============================== */
-
+    /** Wijzigt de clubnaam. */
     public function update(int $id, string $naam): bool
     {
         try {
@@ -108,10 +96,7 @@ class Clubs
         }
     }
 
-    /* ===============================
-       DELETE
-    =============================== */
-
+    /** Verwijdert een club. */
     public function delete(int $id): bool
     {
         try {

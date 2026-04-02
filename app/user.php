@@ -1,4 +1,5 @@
 <?php
+
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
@@ -15,10 +16,7 @@ class User
         }
     }
 
-    /* ===============================
-       CREATE
-    =============================== */
-
+    /** Nieuwe gebruiker met gehasht wachtwoord. */
     public function create(
         string $email,
         string $userrol,
@@ -53,10 +51,7 @@ class User
         }
     }
 
-    /* ===============================
-       READ ALL
-    =============================== */
-
+    /** Alle gebruikers. */
     public function readAll(): array
     {
         try {
@@ -69,10 +64,7 @@ class User
         }
     }
 
-    /* ===============================
-       READ ONE
-    =============================== */
-
+    /** Eén gebruiker op id. */
     public function read(int $id): array|false
     {
         try {
@@ -88,10 +80,7 @@ class User
         }
     }
 
-    /* ===============================
-       UPDATE
-    =============================== */
-
+    /** Wijzigt e-mail, rol en lidnummer (geen wachtwoord). */
     public function update(
         int $id,
         string $email,
@@ -129,10 +118,7 @@ class User
         }
     }
 
-    /* ===============================
-       DELETE
-    =============================== */
-
+    /** Verwijdert gebruiker. */
     public function delete(int $id): bool
     {
         try {
@@ -154,67 +140,66 @@ class User
         }
     }
 
-    /* ===============================
-       LOGIN
-    =============================== */ 
+    /**
+     * Controleert e-mail/lidnummer + wachtwoord, zet 2FA-sessievariabelen en mailt een code.
+     * echte login na verify.php.
+     */
+    public function login(string $identifier, string $password): bool
+    {
+        try {
+            $stmt = $this->pdo->prepare(
+                "SELECT * FROM `user`
+                 WHERE email = :email
+                 OR lidnummer = :lidnummer
+                 LIMIT 1"
+            );
 
-public function login(string $identifier, string $password): bool
-{
-    try {
-        $stmt = $this->pdo->prepare(
-            "SELECT * FROM `user`
-             WHERE email = :email
-             OR lidnummer = :lidnummer
-             LIMIT 1"
-        );
+            $stmt->execute([
+                'email'     => $identifier,
+                'lidnummer' => $identifier
+            ]);
 
-        $stmt->execute([
-            'email'     => $identifier,
-            'lidnummer' => $identifier
-        ]);
+            $user = $stmt->fetch();
 
-        $user = $stmt->fetch();
+            if (!$user) {
+                return false;
+            }
 
-        if (!$user) {
+            if (!password_verify($password, $user['password'])) {
+                return false;
+            }
+
+            $code = random_int(1000, 9999);
+
+            $_SESSION['2fa_user_id'] = $user['id'];
+            $_SESSION['2fa_role']    = $user['userrol'];
+            $_SESSION['2fa_code']    = $code;
+            $_SESSION['2fa_expires'] = time() + 300;
+
+            $this->send2FA($user['email'], $code);
+
+            return true;
+
+        } catch (PDOException $e) {
+            error_log("User::login error: " . $e->getMessage());
             return false;
         }
-
-        if (!password_verify($password, $user['password'])) {
-            return false;
-        }
-
-
-        $code = random_int(1000, 9999);
-
-        $_SESSION['2fa_user_id'] = $user['id'];
-        $_SESSION['2fa_role']    = $user['userrol'];   // 👈 BELANGRIJK
-        $_SESSION['2fa_code']    = $code;
-        $_SESSION['2fa_expires'] = time() + 300;
-
-        $this->send2FA($user['email'], $code);
-
-        return true;
-
-    } catch (PDOException $e) {
-        error_log("User::login error: " . $e->getMessage());
-        return false;
     }
-}
-    /* ===============================
-       LOGOUT
-    =============================== */
 
+    /** Wis sessie en destroy. */
     public function logout(): void
     {
         $_SESSION = [];
         session_destroy();
     }
 
+    /** True als user_id in sessie staat (na geslaagde 2FA). */
     public function isLoggedIn(): bool
     {
         return isset($_SESSION['user_id']);
     }
 
+    /** Kernvelden uit sessie voor de ingelogde gebruiker. */
     public function currentUser(): ?array
     {
         if (!$this->isLoggedIn()) {
@@ -229,43 +214,41 @@ public function login(string $identifier, string $password): bool
         ];
     }
 
+    /** Stuurt de 2FA-code per e-mail (SMTP). */
+    private function send2FA(string $email, int $code): void
+    {
+        require_once __DIR__ . '/../vendor/autoload.php';
 
-private function send2FA(string $email, int $code): void
-{
-    require_once __DIR__ . '/../vendor/autoload.php';
+        $mail = new PHPMailer(true);
 
-    $mail = new PHPMailer(true);
+        try {
 
-    try {
+            $mail->isSMTP();
+            $mail->SMTPOptions = [
+                'ssl' => [
+                    'verify_peer'       => false,
+                    'verify_peer_name'  => false,
+                    'allow_self_signed' => true,
+                ],
+            ];
+            $mail->Host       = 'smtp.gmail.com';
+            $mail->SMTPAuth   = true;
+            $mail->Username   = 'jeremyversteeg37@gmail.com';
+            $mail->Password   = 'novz figa vdxd kzjc';
+            $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+            $mail->Port       = 587;
 
-        $mail->isSMTP();
-        $mail->SMTPOptions = [
-    'ssl' => [
-        'verify_peer'       => false,
-        'verify_peer_name'  => false,
-        'allow_self_signed' => true,
-    ],
-];
-        $mail->Host       = 'smtp.gmail.com';
-        $mail->SMTPAuth   = true;
-        $mail->Username   = 'jeremyversteeg37@gmail.com';
-        $mail->Password   = 'novz figa vdxd kzjc';
-        $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
-        $mail->Port       = 587;
+            $mail->setFrom('jeremyversteeg37@gmail.com', 'GoalGetter');
+            $mail->addAddress($email);
 
-        $mail->setFrom('jeremyversteeg37@gmail.com', 'GoalGetter');
-        $mail->addAddress($email);
+            $mail->Subject = 'Jouw 2FA Code';
+            $mail->Body    = "Jouw verificatiecode is: $code";
 
-        $mail->Subject = 'Jouw 2FA Code';
-        $mail->Body    = "Jouw verificatiecode is: $code";
+            $mail->send();
 
-        $mail->send();
-
-
-    } 
-catch (Exception $e) {
-    echo "Mailer Error: " . $mail->ErrorInfo;
-    exit;
-}
-}
+        } catch (Exception $e) {
+            echo "Mailer Error: " . $mail->ErrorInfo;
+            exit;
+        }
+    }
 }

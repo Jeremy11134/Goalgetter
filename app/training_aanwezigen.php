@@ -4,15 +4,13 @@ class Trainingen
 {
     private PDO $pdo;
 
+    /** Zelfde classname als `app/trainingen.php` — niet beide in één request. */
     public function __construct(PDO $pdo)
     {
         $this->pdo = $pdo;
     }
 
-    /* ===============================
-       CREATE
-    =============================== */
-
+    /** Training met training_aanwezigen_id; false bij overlappend tijdslot. */
     public function create(
         int $training_aanwezigen_id,
         string $start,
@@ -60,10 +58,7 @@ class Trainingen
         }
     }
 
-    /* ===============================
-       READ ALL
-    =============================== */
-
+    /** Alle trainingen. */
     public function readAll(): array
     {
         try {
@@ -80,10 +75,7 @@ class Trainingen
         }
     }
 
-    /* ===============================
-       READ ONE
-    =============================== */
-
+    /** Eén training op id. */
     public function read(int $id): array|false
     {
         try {
@@ -102,10 +94,7 @@ class Trainingen
         }
     }
 
-    /* ===============================
-       UPDATE
-    =============================== */
-
+    /** Wijzigt training en koppeling training_aanwezigen_id. */
     public function update(
         int $id,
         int $training_aanwezigen_id,
@@ -154,10 +143,7 @@ class Trainingen
         }
     }
 
-    /* ===============================
-       DELETE
-    =============================== */
-
+    /** Verwijdert training. */
     public function delete(int $id): bool
     {
         try {
@@ -181,10 +167,7 @@ class Trainingen
         }
     }
 
-    /* ===============================
-       TRAINING CONTROLE
-    =============================== */
-
+    /** True als op deze datum een overlappend tijdslot bestaat. */
     public function trainingControle(
         string $date,
         string $start,

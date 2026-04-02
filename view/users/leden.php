@@ -9,7 +9,6 @@ $pdo = $connect->pdo();
 
 $spelerClass = new Speler($pdo);
 
-/* Spelers ophalen */
 $stmt = $pdo->query("
     SELECT 
         s.id,

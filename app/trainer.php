@@ -9,10 +9,7 @@ class Trainer
         $this->pdo = $pdo;
     }
 
-    /* ===============================
-       CREATE
-    =============================== */
-
+    /** Nieuwe trainer (user + person + club). */
     public function create(int $user_id, int $person_id, int $club_id): bool
     {
         try {
@@ -39,10 +36,7 @@ class Trainer
         }
     }
 
-    /* ===============================
-       READ ALL
-    =============================== */
-
+    /** Alle trainers. */
     public function readAll(): array
     {
         try {
@@ -54,10 +48,7 @@ class Trainer
         }
     }
 
-    /* ===============================
-       READ ONE
-    =============================== */
-
+    /** Eén trainer op id. */
     public function read(int $id): array|false
     {
         try {
@@ -70,10 +61,7 @@ class Trainer
         }
     }
 
-    /* ===============================
-       UPDATE
-    =============================== */
-
+    /** Wijzigt koppelingen. */
     public function update(
         int $id,
         int $user_id,
@@ -108,10 +96,7 @@ class Trainer
         }
     }
 
-    /* ===============================
-       DELETE
-    =============================== */
-
+    /** Verwijdert trainerrecord. */
     public function delete(int $id): bool
     {
         try {
@@ -133,10 +118,7 @@ class Trainer
         }
     }
 
-    /* ===============================
-       REGISTER TRAINER
-    =============================== */
-
+    /** Registratie persoon + user (trainer) + trainer bij club. */
     public function registertrainer(
         string $voornaam,
         ?string $tussenvoegsels,
@@ -150,7 +132,6 @@ class Trainer
         try {
             $this->pdo->beginTransaction();
 
-            /* Person */
             $stmtPerson = $this->pdo->prepare(
                 "INSERT INTO person (voornaam, tussenvoegsels, achternaam)
                  VALUES (:voornaam, :tussenvoegsels, :achternaam)"
@@ -164,7 +145,6 @@ class Trainer
 
             $person_id = $this->pdo->lastInsertId();
 
-            /* User */
             $stmtUser = $this->pdo->prepare(
                 "INSERT INTO `user` (email, userrol, password, lidnummer)
                  VALUES (:email, :userrol, :password, :lidnummer)"
@@ -179,7 +159,6 @@ class Trainer
 
             $user_id = $this->pdo->lastInsertId();
 
-            /* Trainer */
             $stmtTrainer = $this->pdo->prepare(
                 "INSERT INTO trainer (user_id, person_id, club_id)
                  VALUES (:user_id, :person_id, :club_id)"
@@ -201,10 +180,7 @@ class Trainer
         }
     }
 
-    /* ===============================
-       CREATE TRAINING MET SPELERS
-    =============================== */
-
+    /** Training aanmaken + spelers in training_aanwezigen (sessie moet trainer zijn). */
     public function createTrainingMetSpelers(
         string $start,
         string $end,
@@ -264,10 +240,7 @@ class Trainer
         }
     }
 
-    /* ===============================
-       CREATE WEDSTRIJD MET SPELERS
-    =============================== */
-
+    /** Wedstrijd + spelers in wedstrijd_aanwezigen (sessie moet trainer zijn). */
     public function createWedstrijdMetSpelers(
         int $club_id,
         string $start,

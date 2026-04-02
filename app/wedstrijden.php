@@ -9,49 +9,44 @@ class Wedstrijden
         $this->pdo = $pdo;
     }
 
-    /* ===============================
-       CREATE
-    =============================== */
+    /** Slaat wedstrijd op; retourneert nieuw id of null. */
+    public function create(
+        string $start,
+        string $end,
+        string $titel,
+        string $date,
+        string $status
+    ): ?int {
 
-public function create(
-    string $start,
-    string $end,
-    string $titel,
-    string $date,
-    string $status
-): ?int {
+        try {
+            $this->pdo->beginTransaction();
 
-    try {
-        $this->pdo->beginTransaction();
+            $stmt = $this->pdo->prepare(
+                "INSERT INTO wedstrijden (start, end, titel, date, status)
+                 VALUES (:start, :end, :titel, :date, :status)"
+            );
 
-        $stmt = $this->pdo->prepare(
-            "INSERT INTO wedstrijden (start, end, titel, date, status)
-             VALUES (:start, :end, :titel, :date, :status)"
-        );
+            $stmt->execute([
+                'start'  => $start,
+                'end'    => $end,
+                'titel'  => $titel,
+                'date'   => $date,
+                'status' => $status
+            ]);
 
-        $stmt->execute([
-            'start'  => $start,
-            'end'    => $end,
-            'titel'  => $titel,
-            'date'   => $date,
-            'status' => $status
-        ]);
+            $id = (int) $this->pdo->lastInsertId();
+            $this->pdo->commit();
 
-        $id = (int) $this->pdo->lastInsertId();
-        $this->pdo->commit();
+            return $id > 0 ? $id : null;
 
-        return $id > 0 ? $id : null;
-
-    } catch (PDOException $e) {
-        $this->pdo->rollBack();
-        error_log("Wedstrijden::create error: " . $e->getMessage());
-        return null;
+        } catch (PDOException $e) {
+            $this->pdo->rollBack();
+            error_log("Wedstrijden::create error: " . $e->getMessage());
+            return null;
+        }
     }
-}
-    /* ===============================
-       READ ALL
-    =============================== */
 
+    /** Alle wedstrijden, meest recent eerst. */
     public function readAll(): array
     {
         try {
@@ -68,10 +63,7 @@ public function create(
         }
     }
 
-    /* ===============================
-       READ ONE
-    =============================== */
-
+    /** Eén wedstrijd op id. */
     public function read(int $id): array|false
     {
         try {
@@ -90,55 +82,49 @@ public function create(
         }
     }
 
-    /* ===============================
-       UPDATE
-    =============================== */
+    /** Werkt wedstrijdgegevens bij. */
+    public function update(
+        int $id,
+        string $start,
+        string $end,
+        string $titel,
+        string $date,
+        string $status
+    ): bool {
 
-public function update(
-    int $id,
-    string $start,
-    string $end,
-    string $titel,
-    string $date,
-    string $status
-): bool {
+        try {
+            $this->pdo->beginTransaction();
 
-    try {
-        $this->pdo->beginTransaction();
+            $stmt = $this->pdo->prepare(
+                "UPDATE wedstrijden
+                 SET start = :start,
+                     end = :end,
+                     titel = :titel,
+                     date = :date,
+                     status = :status
+                 WHERE id = :id"
+            );
 
-        $stmt = $this->pdo->prepare(
-            "UPDATE wedstrijden
-             SET start = :start,
-                 end = :end,
-                 titel = :titel,
-                 date = :date,
-                 status = :status
-             WHERE id = :id"
-        );
+            $stmt->execute([
+                'id'     => $id,
+                'start'  => $start,
+                'end'    => $end,
+                'titel'  => $titel,
+                'date'   => $date,
+                'status' => $status
+            ]);
 
-        $stmt->execute([
-            'id'     => $id,
-            'start'  => $start,
-            'end'    => $end,
-            'titel'  => $titel,
-            'date'   => $date,
-            'status' => $status
-        ]);
+            $this->pdo->commit();
+            return true;
 
-        $this->pdo->commit();
-        return true;
-
-    } catch (PDOException $e) {
-        $this->pdo->rollBack();
-        error_log("Wedstrijden::update error: " . $e->getMessage());
-        return false;
+        } catch (PDOException $e) {
+            $this->pdo->rollBack();
+            error_log("Wedstrijden::update error: " . $e->getMessage());
+            return false;
+        }
     }
-}
 
-    /* ===============================
-       DELETE
-    =============================== */
-
+    /** Verwijdert wedstrijd. */
     public function delete(int $id): bool
     {
         try {

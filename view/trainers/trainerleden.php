@@ -7,7 +7,7 @@ require_once __DIR__ . '/../../app/speler.php';
 if (!isset($_SESSION['role']) || 
     ($_SESSION['role'] !== 'trainer' && $_SESSION['role'] !== 'club_admin')) {
 
-    header("Location: ../dashboard.php");
+    header("Location: ../login.php");
     exit;
 }
 
@@ -15,14 +15,12 @@ $connect = new Connect();
 $pdo = $connect->pdo();
 $spelerClass = new Speler($pdo);
 
-/* DELETE speler */
 if (isset($_GET['delete'])) {
     $spelerClass->delete((int)$_GET['delete']);
     header("Location: trainerleden.php");
     exit;
 }
 
-/* ADD speler */
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $voornaam   = $_POST['voornaam'] ?? '';
@@ -102,7 +100,7 @@ if (isset($_POST['update_stats'])) {
 <html>
 <head>
     <title>Trainer - Leden</title>
-    <link rel="stylesheet" href="/Goalgetter/view/trainers/style.css">
+    <link rel="stylesheet" href="/Goalgetter/view/app.css">
 </head>
 <body>
 

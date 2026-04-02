@@ -1051,3 +1051,48 @@ body.simple-page {
         padding: 20px;
     }
 }
+
+/* Trainer admin: compact round action buttons */
+.header-row .btn-add {
+    width: 48px;
+    height: 48px;
+    padding: 0;
+    border-radius: 50%;
+    font-size: 24px;
+    line-height: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Zelfde ronde actie-iconen als wedstrijden/trainingen (ook stat-table voor admin) */
+.wedstrijd-table .btn-edit,
+.wedstrijd-table .btn-delete,
+.stat-table .btn-edit,
+.stat-table .btn-delete {
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    line-height: 1;
+}
+
+.wedstrijd-table .btn-delete,
+.stat-table .btn-delete {
+    text-decoration: none;
+}
+
+/* stat-table overschrijft rechthoekige .stat-table button voor deze knoppen */
+.stat-table button.btn-edit {
+    background: var(--gg-info-subtle);
+    color: #0f766e;
+    border: 1px solid #99f6e4;
+}
+
+.stat-table button.btn-edit:hover {
+    background: #99f6e4;
+}

@@ -18,7 +18,6 @@ if ($isSpeler) {
     $speler_id = $speler['id'] ?? null;
 }
 
-/* Status wijzigen */
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && $isSpeler && $speler_id) {
 
     $training_id = $_POST['training_id'] ?? null;

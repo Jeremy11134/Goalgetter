@@ -4,14 +4,13 @@ session_start();
 require_once __DIR__ . '/../../connect.php';
 
 if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'club_admin') {
-    header("Location: ../dashboard.php");
+    header("Location: ../login.php");
     exit;
 }
 
 $connect = new Connect();
 $pdo = $connect->pdo();
 
-/* Counts */
 $aantalSpelers     = $pdo->query("SELECT COUNT(*) FROM speler")->fetchColumn();
 $aantalTrainers    = $pdo->query("SELECT COUNT(*) FROM trainer")->fetchColumn();
 $aantalWedstrijden = $pdo->query("SELECT COUNT(*) FROM wedstrijden")->fetchColumn();
@@ -45,7 +44,7 @@ $aantalTrainingen  = $pdo->query("SELECT COUNT(*) FROM trainingen")->fetchColumn
     <!-- CONTENT -->
     <div class="content">
 
-        <!-- ✅ Zelfde header structuur -->
+        <!-- Header consistent met andere adminpagina's -->
         <div class="header-row">
             <h2>Dashboard</h2>
         </div>
@@ -54,7 +53,7 @@ $aantalTrainingen  = $pdo->query("SELECT COUNT(*) FROM trainingen")->fetchColumn
 
         <?php require __DIR__ . '/../partials/notification_panel.php'; ?>
 
-        <!-- ✅ Grid zoals andere pagina's -->
+        <!-- Statistieken-tegels in raster -->
         <div class="dashboard-grid">
 
             <div class="dashboard-card">

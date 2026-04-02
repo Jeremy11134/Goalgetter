@@ -4,9 +4,8 @@ session_start();
 require_once __DIR__ . '/../../connect.php';
 require_once __DIR__ . '/../../app/wedstrijden.php';
 
-/* ✅ Alleen admin toegang */
 if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'club_admin') {
-    header("Location: ../dashboard.php");
+    header("Location: ../login.php");
     exit;
 }
 
@@ -15,7 +14,6 @@ $pdo = $connect->pdo();
 
 $wedstrijdenClass = new Wedstrijden($pdo);
 
-/* DELETE */
 if (isset($_GET['delete'])) {
     $id = (int)$_GET['delete'];
     $wedstrijdenClass->delete($id);
@@ -23,7 +21,6 @@ if (isset($_GET['delete'])) {
     exit;
 }
 
-/* SAVE (ADD / EDIT) */
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $id     = $_POST['id'] ?? null;
@@ -64,13 +61,12 @@ $wedstrijden = $wedstrijdenClass->readAll();
 <html>
 <head>
     <title>Admin - Wedstrijden</title>
-    <link rel="stylesheet" href="/Goalgetter/view/trainers/style.css">
+    <link rel="stylesheet" href="/Goalgetter/view/app.css">
 </head>
 <body>
 
 <div class="layout">
 
-    <!-- ✅ ADMIN SIDEBAR -->
     <div class="sidebar">
         <h2>Admin Menu</h2>
         <a href="admindashboard.php">Dashboard</a>
@@ -170,7 +166,6 @@ $wedstrijden = $wedstrijdenClass->readAll();
 </div>
 
 <script>
-// JS blijft exact hetzelfde
 document.addEventListener("DOMContentLoaded", function () {
 
     const modal = document.getElementById("wedstrijdModal");

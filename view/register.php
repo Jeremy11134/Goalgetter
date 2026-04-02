@@ -20,7 +20,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $email           = $_POST['email'] ?? '';
     $password        = $_POST['password'] ?? '';
 
-    $lidnummer = 'LID' . time();   // automatisch gegenereerd
+    $lidnummer = 'LID' . time();
 
     if ($ouders->registerouder(
     $voornaam,

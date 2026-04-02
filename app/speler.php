@@ -9,10 +9,7 @@ class Speler
         $this->pdo = $pdo;
     }
 
-    /* ===============================
-       CREATE
-    =============================== */
-
+    /** Nieuwe spelerrij met koppelingen naar user, person, club en statistieken. */
     public function create(
         int $user_id,
         int $person_id,
@@ -44,26 +41,20 @@ class Speler
         }
     }
 
-    /* ===============================
-       READ ALL
-    =============================== */
-
-public function getAllSpelers() {
-    $stmt = $this->pdo->prepare("
+    /** id + weergavenaam voor iedere speler (o.a. formulierselecties). */
+    public function getAllSpelers() {
+        $stmt = $this->pdo->prepare("
         SELECT 
             s.id, 
             CONCAT(p.voornaam, ' ', p.tussenvoegsels, ' ', p.achternaam) AS naam
         FROM speler s
         JOIN person p ON s.person_id = p.id
     ");
-    $stmt->execute();
-    return $stmt->fetchAll(PDO::FETCH_ASSOC);
-}
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
 
-    /* ===============================
-       READ ONE
-    =============================== */
-
+    /** Eén speler op primair sleutel. */
     public function read(int $id): array|false
     {
         try {
@@ -76,10 +67,7 @@ public function getAllSpelers() {
         }
     }
 
-    /* ===============================
-       UPDATE
-    =============================== */
-
+    /** Werkt alle koppelvelden bij. */
     public function update(
         int $id,
         int $user_id,
@@ -117,10 +105,7 @@ public function getAllSpelers() {
         }
     }
 
-    /* ===============================
-       DELETE
-    =============================== */
-
+    /** Verwijdert speler. */
     public function delete(int $id): bool
     {
         try {
@@ -142,10 +127,9 @@ public function getAllSpelers() {
         }
     }
 
-    /* ===============================
-       REGISTER SPELER
-    =============================== */
-
+    /**
+     * Registreert persoon, user (speler), lege statistieken en speler bij club.
+     */
     public function registerspeler(
         string $voornaam,
         ?string $tussenvoegsels,
@@ -159,7 +143,6 @@ public function getAllSpelers() {
         try {
             $this->pdo->beginTransaction();
 
-            /* Person */
             $stmtPerson = $this->pdo->prepare(
                 "INSERT INTO person (voornaam, tussenvoegsels, achternaam)
                  VALUES (:voornaam, :tussenvoegsels, :achternaam)"
@@ -173,7 +156,6 @@ public function getAllSpelers() {
 
             $person_id = $this->pdo->lastInsertId();
 
-            /* User */
             $stmtUser = $this->pdo->prepare(
                 "INSERT INTO `user` (email, userrol, password, lidnummer)
                  VALUES (:email, :userrol, :password, :lidnummer)"
@@ -188,7 +170,6 @@ public function getAllSpelers() {
 
             $user_id = $this->pdo->lastInsertId();
 
-            /* Stats */
             $stmtStats = $this->pdo->prepare(
                 "INSERT INTO statistieken (goals, win, draw, loses)
                  VALUES (0, 0, 0, 0)"
@@ -197,7 +178,6 @@ public function getAllSpelers() {
             $stmtStats->execute();
             $statistieken_id = $this->pdo->lastInsertId();
 
-            /* Speler */
             $stmtSpeler = $this->pdo->prepare(
                 "INSERT INTO speler (user_id, person_id, club_id, statistieken_id)
                  VALUES (:user_id, :person_id, :club_id, :statistieken_id)"
@@ -220,10 +200,7 @@ public function getAllSpelers() {
         }
     }
 
-    /* ===============================
-       GET STATISTIEKEN
-    =============================== */
-
+    /** Haalt het gekoppelde statistieken-record op. */
     public function getStatistieken(int $speler_id): array|false
     {
         try {
@@ -242,21 +219,20 @@ public function getAllSpelers() {
                 return false;
             }
 
-            require_once 'Statistieken.php';
+            require_once __DIR__ . '/statistieken.php';
             $statistieken = new Statistieken($this->pdo);
 
             return $statistieken->read((int)$result['statistieken_id']);
-
         } catch (PDOException $e) {
             error_log("Speler::getStatistieken error: " . $e->getMessage());
             return false;
         }
     }
 
-    /* ===============================
-       MELD AANWEZIGHEID
-    =============================== */
-
+    /**
+     * Zet aanwezigheid voor training of wedstrijd (alleen rol speler).
+     * $type: 'training' | 'wedstrijd'
+     */
     public function meldAanwezigheid(
         string $type,
         int $event_id,
@@ -344,50 +320,50 @@ public function getAllSpelers() {
         }
     }
 
-    
-        public function getGemiddeldeGoals(int $speler_id): float|false
-        {
-            try {
+    /** Gemiddelde goals per gespeelde wedstrijd (W+G+V als noemer). */
+    public function getGemiddeldeGoals(int $speler_id): float|false
+    {
+        try {
 
-                $stmt = $this->pdo->prepare(
-                    "SELECT statistieken_id
-                    FROM speler
-                    WHERE id = :id
-                    LIMIT 1"
-                );
+            $stmt = $this->pdo->prepare(
+                "SELECT statistieken_id
+                FROM speler
+                WHERE id = :id
+                LIMIT 1"
+            );
 
-                $stmt->execute(['id' => $speler_id]);
-                $result = $stmt->fetch();
+            $stmt->execute(['id' => $speler_id]);
+            $result = $stmt->fetch();
 
-                if (!$result) {
-                    error_log("Speler::getGemiddeldeGoals - speler niet gevonden");
-                    return false;
-                }
-
-                require_once 'Statistieken.php';
-                $statistieken = new Statistieken($this->pdo);
-
-                $stats = $statistieken->read((int)$result['statistieken_id']);
-
-                if (!$stats) {
-                    error_log("Speler::getGemiddeldeGoals - statistieken niet gevonden");
-                    return false;
-                }
-
-                $goals = (int)$stats['goals'];
-                $wedstrijden = (int)$stats['win'] + (int)$stats['draw'] + (int)$stats['loses'];
-
-                if ($wedstrijden === 0) {
-                    return 0.0;
-                }
-
-                $gemiddelde = $goals / $wedstrijden;
-
-                return round($gemiddelde, 2);
-
-            } catch (PDOException $e) {
-                error_log("Speler::getGemiddeldeGoals error: " . $e->getMessage());
+            if (!$result) {
+                error_log("Speler::getGemiddeldeGoals - speler niet gevonden");
                 return false;
             }
+
+            require_once __DIR__ . '/statistieken.php';
+            $statistieken = new Statistieken($this->pdo);
+
+            $stats = $statistieken->read((int)$result['statistieken_id']);
+
+            if (!$stats) {
+                error_log("Speler::getGemiddeldeGoals - statistieken niet gevonden");
+                return false;
+            }
+
+            $goals = (int)$stats['goals'];
+            $wedstrijden = (int)$stats['win'] + (int)$stats['draw'] + (int)$stats['loses'];
+
+            if ($wedstrijden === 0) {
+                return 0.0;
+            }
+
+            $gemiddelde = $goals / $wedstrijden;
+
+            return round($gemiddelde, 2);
+
+        } catch (PDOException $e) {
+            error_log("Speler::getGemiddeldeGoals error: " . $e->getMessage());
+            return false;
         }
+    }
 }

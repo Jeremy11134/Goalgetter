@@ -9,10 +9,7 @@ class WedstrijdAanwezigen
         $this->pdo = $pdo;
     }
 
-    /* ===============================
-       CREATE
-    =============================== */
-
+    /** Nieuwe aanwezigheidsregel (speler/trainer/status). */
     public function create(
         int $speler_id,
         int $trainer_id,
@@ -44,10 +41,7 @@ class WedstrijdAanwezigen
         }
     }
 
-    /* ===============================
-       READ ALL
-    =============================== */
-
+    /** Alle rijen (admin). */
     public function readAll(): array
     {
         try {
@@ -63,10 +57,7 @@ class WedstrijdAanwezigen
         }
     }
 
-    /* ===============================
-       READ ONE
-    =============================== */
-
+    /** Eén record op id. */
     public function read(int $id): array|false
     {
         try {
@@ -84,10 +75,7 @@ class WedstrijdAanwezigen
         }
     }
 
-    /* ===============================
-       UPDATE
-    =============================== */
-
+    /** Wijzigt koppeling of status. */
     public function update(
         int $id,
         int $speler_id,
@@ -124,10 +112,7 @@ class WedstrijdAanwezigen
         }
     }
 
-    /* ===============================
-       DELETE
-    =============================== */
-
+    /** Verwijdert rij. */
     public function delete(int $id): bool
     {
         try {
@@ -150,10 +135,7 @@ class WedstrijdAanwezigen
         }
     }
 
-    /* ===============================
-       GET SPELERS VOOR WEDSTRIJD
-    =============================== */
-
+    /** Spelers + namen + status voor één wedstrijd. */
     public function getSpelersVoorWedstrijd(int $wedstrijd_id): array
     {
         try {

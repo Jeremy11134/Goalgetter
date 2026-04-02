@@ -18,11 +18,9 @@ if ($isSpeler) {
     $speler_id = $speler['id'] ?? null;
 }
 
-/* Tab bepalen */
 $tab = $_GET['tab'] ?? 'upcoming';
 $today = date('Y-m-d');
 
-/* Wedstrijden ophalen */
 if ($tab === 'old') {
     $stmt = $pdo->prepare(
         "SELECT id, date, titel 

@@ -13,7 +13,6 @@ if (!isset($_SESSION['user_id'])) {
     exit;
 }
 
-/* 🔵 Aankomende training */
 $stmt = $pdo->query("
     SELECT * FROM trainingen
     WHERE date >= CURDATE()
@@ -22,7 +21,6 @@ $stmt = $pdo->query("
 ");
 $training = $stmt->fetch();
 
-/* 🔴 Aankomende wedstrijd */
 $stmt = $pdo->query("
     SELECT * FROM wedstrijden
     WHERE date >= CURDATE()
@@ -31,7 +29,6 @@ $stmt = $pdo->query("
 ");
 $wedstrijd = $stmt->fetch();
 
-/* 🟢 Top 5 spelers */
 $stmt = $pdo->query("
     SELECT 
         p.voornaam,
@@ -62,7 +59,7 @@ $topSpelers = $stmt->fetchAll();
 
 <div class="layout">
 
-    <!-- 🔵 Sidebar -->
+    <!-- Zijmenu -->
     <div class="sidebar">
         <h2>GoalGetter</h2>
 
@@ -73,7 +70,7 @@ $topSpelers = $stmt->fetchAll();
         <a href="../login.php">Logout</a>
     </div>
 
-    <!-- 🟢 Content -->
+    <!-- Hoofdinhoud -->
     <div class="content">
 
         <h1>Dashboard</h1>

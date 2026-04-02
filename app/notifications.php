@@ -5,13 +5,14 @@ class Notifications
     /** @var PDO */
     private $pdo;
 
+    /** @param PDO $pdo database-verbinding voor notification-tabellen */
     public function __construct(PDO $pdo)
     {
         $this->pdo = $pdo;
     }
 
     /**
-     * Stuur een melding naar alle gebruikers behalve degene die de wedstrijd aanmaakte.
+     * Maakt voor elke gebruiker (behalve de aanmaker) een ongelezen notificatieregel aan.
      */
     public function notifyNewWedstrijd($excludeUserId, $wedstrijdId, $titel, $date)
     {
@@ -49,9 +50,10 @@ class Notifications
     }
 
     /**
-     * @param int $userId
-     * @param int $limit
-     * @return array
+     * Data voor het meldingenpaneel: laatste berichten + aantal ongelezen.
+     *
+     * @param int $limit maximaal aantal items (begrensd tussen 1 en 50)
+     * @return array{items: array, unread_count: int}
      */
     public function getPanelData($userId, $limit = 15)
     {
@@ -88,9 +90,9 @@ class Notifications
     }
 
     /**
-     * @param int $notificationId
-     * @param int $userId
-     * @return bool
+     * Zet één melding op gelezen voor de ingelogde gebruiker (id + eigenaar-check).
+     *
+     * @return bool true als er een rij is aangepast
      */
     public function markAsRead($notificationId, $userId)
     {

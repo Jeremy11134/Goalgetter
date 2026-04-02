@@ -6,7 +6,7 @@ require_once __DIR__ . '/../../app/speler.php';
 require_once __DIR__ . '/../../app/trainer.php';
 
 if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'club_admin') {
-    header("Location: ../dashboard.php");
+    header("Location: ../login.php");
     exit;
 }
 
@@ -117,7 +117,7 @@ $spelers = $pdo->query("
 <html>
 <head>
     <title>Admin - Leden</title>
-    <link rel="stylesheet" href="/Goalgetter/view/trainers/style.css">
+    <link rel="stylesheet" href="/Goalgetter/view/app.css">
 </head>
 <body>
 

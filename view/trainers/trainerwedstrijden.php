@@ -8,7 +8,7 @@ require_once __DIR__ . '/../../app/speler.php';
 if (!isset($_SESSION['role']) || 
     ($_SESSION['role'] !== 'trainer' && $_SESSION['role'] !== 'club_admin')) {
 
-    header("Location: ../dashboard.php");
+    header("Location: ../login.php");
     exit;
 }
 
@@ -20,7 +20,6 @@ $wedstrijdenClass = new Wedstrijden($pdo);
 $spelersClass = new Speler($pdo);
 $spelers = $spelersClass->getAllSpelers();
 
-/* DELETE */
 if (isset($_GET['delete'])) {
     $id = (int)$_GET['delete'];
     $wedstrijdenClass->delete($id);
@@ -28,7 +27,6 @@ if (isset($_GET['delete'])) {
     exit;
 }
 
-/* SAVE (ADD / EDIT) */
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $id     = $_POST['id'] ?? null;
@@ -50,11 +48,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $status
         );
 
-        // 🔥 eerst verwijderen
         $stmt = $pdo->prepare("DELETE FROM wedstrijd_aanwezigen WHERE wedstrijd_id = ?");
         $stmt->execute([$id]);
 
-        // 🔥 opnieuw toevoegen
         foreach ($spelersSelected as $spelerId) {
             $stmt = $pdo->prepare("
                 INSERT INTO wedstrijd_aanwezigen (wedstrijd_id, speler_id, status)
@@ -91,7 +87,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             );
         }
 
-        // 🔥 spelers opslaan
         foreach ($spelersSelected as $spelerId) {
             $stmt = $pdo->prepare("
                 INSERT INTO wedstrijd_aanwezigen (wedstrijd_id, speler_id, status)
@@ -105,7 +100,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     exit;
 }
 
-/* Alle wedstrijden ophalen */
 $wedstrijden = $wedstrijdenClass->readAll();
 ?>
 
@@ -212,7 +206,6 @@ $wedstrijden = $wedstrijdenClass->readAll();
                     <option value="geannuleerd">Geannuleerd</option>
                 </select>
 
-                <!-- 🔥 NIEUW: SPELERS -->
                 <label>Spelers</label>
                 <div class="spelers-lijst">
                     <?php foreach ($spelers as $speler): ?>

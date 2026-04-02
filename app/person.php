@@ -9,10 +9,7 @@ class Person
         $this->pdo = $pdo;
     }
 
-    /* ===============================
-       CREATE
-    =============================== */
-
+    /** Maakt een persoonsrecord aan. */
     public function create(
         string $voornaam,
         ?string $tussenvoegsels,
@@ -42,10 +39,7 @@ class Person
         }
     }
 
-    /* ===============================
-       READ ALL
-    =============================== */
-
+    /** Alle personen, nieuwste eerst. */
     public function readAll(): array
     {
         try {
@@ -57,10 +51,7 @@ class Person
         }
     }
 
-    /* ===============================
-       READ ONE
-    =============================== */
-
+    /** Eén persoon op id. */
     public function read(int $id): array|false
     {
         try {
@@ -73,10 +64,7 @@ class Person
         }
     }
 
-    /* ===============================
-       UPDATE
-    =============================== */
-
+    /** Werkt naamgegevens bij. */
     public function update(
         int $id,
         string $voornaam,
@@ -111,10 +99,7 @@ class Person
         }
     }
 
-    /* ===============================
-       DELETE
-    =============================== */
-
+    /** Verwijdert een persoon. */
     public function delete(int $id): bool
     {
         try {

@@ -4,6 +4,7 @@ class Connect
 {
     private PDO $pdo;
 
+    /** Legt één PDO-verbinding aan */
     public function __construct()
     {
         $host = "localhost";
@@ -24,18 +25,15 @@ class Connect
 
             $this->pdo = new PDO($dsn, $user, $pass, $options);
 
-            // Optional: log succesvolle connectie (voor debug)
-            // error_log("Database connected successfully.");
-
         } catch (PDOException $e) {
 
             error_log("Database connection failed: " . $e->getMessage());
 
-            // Gooi exception door i.p.v. die()
             throw new PDOException("Database connection failed.");
         }
     }
 
+    /** Geeft de gedeelde PDO terug. */
     public function pdo(): PDO
     {
         return $this->pdo;

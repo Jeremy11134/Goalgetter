@@ -4,9 +4,8 @@ session_start();
 require_once __DIR__ . '/../../connect.php';
 require_once __DIR__ . '/../../app/trainingen.php';
 
-/* ✅ Alleen admin */
 if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'club_admin') {
-    header("Location: ../dashboard.php");
+    header("Location: ../login.php");
     exit;
 }
 
@@ -16,7 +15,6 @@ $pdo = $connect->pdo();
 $trainingenClass = new Trainingen($pdo);
 $error = '';
 
-/* DELETE */
 if (isset($_GET['delete'])) {
     $id = (int)$_GET['delete'];
     $trainingenClass->delete($id);
@@ -24,7 +22,6 @@ if (isset($_GET['delete'])) {
     exit;
 }
 
-/* SAVE */
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $id     = $_POST['id'] ?? null;
@@ -73,7 +70,7 @@ $trainingen = $trainingenClass->readAll();
 <html>
 <head>
     <title>Admin - Trainingen</title>
-    <link rel="stylesheet" href="/Goalgetter/view/trainers/style.css">
+    <link rel="stylesheet" href="/Goalgetter/view/app.css">
 </head>
 <body>
 

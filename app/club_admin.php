@@ -9,10 +9,7 @@ class ClubAdmin
         $this->pdo = $pdo;
     }
 
-    /* ===============================
-       CREATE
-    =============================== */
-
+    /** Koppelt user_id aan person_id in club_admin. */
     public function create(int $user_id, int $person_id): bool
     {
         try {
@@ -40,10 +37,7 @@ class ClubAdmin
         }
     }
 
-    /* ===============================
-       READ ALL
-    =============================== */
-
+    /** Alle club_admin-rijen. */
     public function readAll(): array
     {
         try {
@@ -60,10 +54,7 @@ class ClubAdmin
         }
     }
 
-    /* ===============================
-       READ ONE
-    =============================== */
-
+    /** Eén club_admin-record op id. */
     public function read(int $id): array|false
     {
         try {
@@ -82,10 +73,7 @@ class ClubAdmin
         }
     }
 
-    /* ===============================
-       UPDATE
-    =============================== */
-
+    /** Wijzigt de koppeling user ↔ persoon. */
     public function update(int $id, int $user_id, int $person_id): bool
     {
         try {
@@ -116,10 +104,7 @@ class ClubAdmin
         }
     }
 
-    /* ===============================
-       DELETE
-    =============================== */
-
+    /** Verwijdert een club_admin-rij. */
     public function delete(int $id): bool
     {
         try {
@@ -143,10 +128,9 @@ class ClubAdmin
         }
     }
 
-    /* ===============================
-       REGISTER CLUB ADMIN
-    =============================== */
-
+    /**
+     * Registreert persoon, user (rol club_admin, gehasht wachtwoord) en club_admin in één transactie.
+     */
     public function registerclub_admin(
         string $voornaam,
         ?string $tussenvoegsels,
@@ -159,7 +143,6 @@ class ClubAdmin
         try {
             $this->pdo->beginTransaction();
 
-            /* Person */
             $stmtPerson = $this->pdo->prepare(
                 "INSERT INTO person (voornaam, tussenvoegsels, achternaam)
                  VALUES (:voornaam, :tussenvoegsels, :achternaam)"
@@ -173,7 +156,6 @@ class ClubAdmin
 
             $person_id = $this->pdo->lastInsertId();
 
-            /* User */
             $stmtUser = $this->pdo->prepare(
                 "INSERT INTO `user` (email, userrol, password, lidnummer)
                  VALUES (:email, :userrol, :password, :lidnummer)"
@@ -188,7 +170,6 @@ class ClubAdmin
 
             $user_id = $this->pdo->lastInsertId();
 
-            /* Club Admin */
             $stmtAdmin = $this->pdo->prepare(
                 "INSERT INTO club_admin (user_id, person_id)
                  VALUES (:user_id, :person_id)"
