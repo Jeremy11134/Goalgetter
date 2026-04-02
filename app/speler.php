@@ -48,16 +48,17 @@ class Speler
        READ ALL
     =============================== */
 
-    public function readAll(): array
-    {
-        try {
-            $stmt = $this->pdo->query("SELECT * FROM speler ORDER BY id DESC");
-            return $stmt->fetchAll();
-        } catch (PDOException $e) {
-            error_log("Speler::readAll error: " . $e->getMessage());
-            return [];
-        }
-    }
+public function getAllSpelers() {
+    $stmt = $this->pdo->prepare("
+        SELECT 
+            s.id, 
+            CONCAT(p.voornaam, ' ', p.tussenvoegsels, ' ', p.achternaam) AS naam
+        FROM speler s
+        JOIN person p ON s.person_id = p.id
+    ");
+    $stmt->execute();
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
 
     /* ===============================
        READ ONE

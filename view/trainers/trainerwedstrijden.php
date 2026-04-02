@@ -3,6 +3,7 @@ session_start();
 
 require_once __DIR__ . '/../../connect.php';
 require_once __DIR__ . '/../../app/wedstrijden.php';
+require_once __DIR__ . '/../../app/speler.php';
 
 if (!isset($_SESSION['role']) || 
     ($_SESSION['role'] !== 'trainer' && $_SESSION['role'] !== 'club_admin')) {
@@ -15,6 +16,9 @@ $connect = new Connect();
 $pdo = $connect->pdo();
 
 $wedstrijdenClass = new Wedstrijden($pdo);
+
+$spelersClass = new Speler($pdo);
+$spelers = $spelersClass->getAllSpelers();
 
 /* DELETE */
 if (isset($_GET['delete'])) {
@@ -33,8 +37,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $end    = $_POST['end'];
     $titel  = $_POST['titel'];
     $status = $_POST['status'];
+    $spelersSelected = $_POST['spelers'] ?? [];
 
     if ($id) {
+
         $wedstrijdenClass->update(
             $id,
             $start,
@@ -43,14 +49,38 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $date,
             $status
         );
+
+        // 🔥 eerst verwijderen
+        $stmt = $pdo->prepare("DELETE FROM wedstrijd_aanwezigen WHERE wedstrijd_id = ?");
+        $stmt->execute([$id]);
+
+        // 🔥 opnieuw toevoegen
+        foreach ($spelersSelected as $spelerId) {
+            $stmt = $pdo->prepare("
+                INSERT INTO wedstrijd_aanwezigen (wedstrijd_id, speler_id, status)
+                VALUES (?, ?, 'aanwezig')
+            ");
+            $stmt->execute([$id, $spelerId]);
+        }
+
     } else {
-        $wedstrijdenClass->create(
+
+        $wedstrijdId = $wedstrijdenClass->create(
             $start,
             $end,
             $titel,
             $date,
             $status
         );
+
+        // 🔥 spelers opslaan
+        foreach ($spelersSelected as $spelerId) {
+            $stmt = $pdo->prepare("
+                INSERT INTO wedstrijd_aanwezigen (wedstrijd_id, speler_id, status)
+                VALUES (?, ?, 'aanwezig')
+            ");
+            $stmt->execute([$wedstrijdId, $spelerId]);
+        }
     }
 
     header("Location: trainerwedstrijden.php");
@@ -142,30 +172,41 @@ $wedstrijden = $wedstrijdenClass->readAll();
 
         <h2 id="modalTitle">Wedstrijd Toevoegen</h2>
 
-        <form method="POST">
-            <input type="hidden" name="id" id="wedstrijdId">
+            <form method="POST">
+                <input type="hidden" name="id" id="wedstrijdId">
 
-            <label>Datum</label>
-            <input type="date" name="date" id="wedstrijdDate" required>
+                <label>Datum</label>
+                <input type="date" name="date" id="wedstrijdDate" required>
 
-            <label>Starttijd</label>
-            <input type="time" name="start" id="wedstrijdStart" required>
+                <label>Starttijd</label>
+                <input type="time" name="start" id="wedstrijdStart" required>
 
-            <label>Eindtijd</label>
-            <input type="time" name="end" id="wedstrijdEnd" required>
+                <label>Eindtijd</label>
+                <input type="time" name="end" id="wedstrijdEnd" required>
 
-            <label>Titel</label>
-            <input type="text" name="titel" id="wedstrijdTitel" required>
+                <label>Titel</label>
+                <input type="text" name="titel" id="wedstrijdTitel" required>
 
-            <label>Status</label>
-            <select name="status" id="wedstrijdStatus">
-                <option value="gepland">Gepland</option>
-                <option value="gespeeld">Gespeeld</option>
-                <option value="geannuleerd">Geannuleerd</option>
-            </select>
+                <label>Status</label>
+                <select name="status" id="wedstrijdStatus">
+                    <option value="gepland">Gepland</option>
+                    <option value="gespeeld">Gespeeld</option>
+                    <option value="geannuleerd">Geannuleerd</option>
+                </select>
 
-            <button type="submit" class="btn-save">Opslaan</button>
-        </form>
+                <!-- 🔥 NIEUW: SPELERS -->
+                <label>Spelers</label>
+                <div class="spelers-lijst">
+                    <?php foreach ($spelers as $speler): ?>
+                        <div class="speler-row">
+                        <input type="checkbox" name="spelers[]" value="<?= $speler['id'] ?>">
+                        <span><?= htmlspecialchars($speler['naam']) ?></span>
+                        </div>
+                    <?php endforeach; ?>
+                </div>
+
+                <button type="submit" class="btn-save">Opslaan</button>
+            </form>
     </div>
 </div>
 
@@ -185,6 +226,9 @@ document.addEventListener("DOMContentLoaded", function () {
         document.getElementById("wedstrijdTitel").value = "";
         document.getElementById("wedstrijdStatus").value = "gepland";
         modal.style.display = "block";
+        document.querySelectorAll("input[name='spelers[]']").forEach(cb => {
+        cb.checked = false;
+        });
     };
 
     window.openEditModal = function (id, date, start, end, titel, status) {
