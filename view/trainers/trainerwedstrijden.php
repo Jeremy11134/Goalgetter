@@ -107,7 +107,7 @@ $wedstrijden = $wedstrijdenClass->readAll();
 <html>
 <head>
     <title>Trainer - Wedstrijden</title>
-    <link rel="stylesheet" href="/Goalgetter/view/trainers/style.css">
+    <link rel="stylesheet" href="/Goalgetter/view/app.css">
 </head>
 <body>
 
