@@ -51,8 +51,10 @@ $topSpelers = $stmt->fetchAll();
 ?>
 
 <!DOCTYPE html>
-<html>
+<html lang="nl">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Dashboard</title>
     <link rel="stylesheet" href="/Goalgetter/view/style.css">
 </head>
@@ -75,6 +77,8 @@ $topSpelers = $stmt->fetchAll();
     <div class="content">
 
         <h1>Dashboard</h1>
+
+        <?php require __DIR__ . '/../partials/notification_panel.php'; ?>
 
         <div class="cards">
 
@@ -132,5 +136,4 @@ $topSpelers = $stmt->fetchAll();
 </div>
 
 </body>
-</html>
 </html>

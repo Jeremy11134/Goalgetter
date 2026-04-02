@@ -26,33 +26,38 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 ?>
 
 <!DOCTYPE html>
-<html>
+<html lang="nl">
 <head>
-    <title>Login</title>
-     <link rel="stylesheet" href="/Goalgetter/view/login.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Inloggen – GoalGetter</title>
+    <link rel="stylesheet" href="/Goalgetter/view/login.css">
 </head>
-<body>
+<body class="auth-page">
 
-<h2>Login</h2>
+<div class="auth-shell">
+    <h1 class="auth-brand">GoalGetter</h1>
+    <div class="auth-card">
+        <h2 class="auth-title">Inloggen</h2>
 
-<?php if ($error): ?>
-    <p style="color:red;"><?= $error ?></p>
-<?php endif; ?>
+        <?php if ($error): ?>
+            <p class="alert alert-error"><?= htmlspecialchars($error) ?></p>
+        <?php endif; ?>
 
-<div class="login-container">
-    <form method="POST">
-        <label>Email of Lidnummer:</label><br>
-        <input type="text" name="identifier" required><br><br>
+        <form method="POST">
+            <label for="identifier">Email of lidnummer</label>
+            <input type="text" id="identifier" name="identifier" required autocomplete="username">
 
-        <label>Wachtwoord:</label><br>
-        <input type="password" name="password" required><br><br>
+            <label for="password">Wachtwoord</label>
+            <input type="password" id="password" name="password" required autocomplete="current-password">
 
-        <button type="submit">Login</button>
+            <button type="submit">Inloggen</button>
 
-        <div class="extra-links">
-            <a href="register.php">Nog geen account? Registreer</a>
-        </div>
-    </form>
+            <div class="extra-links">
+                <a href="register.php">Nog geen account? Registreer</a>
+            </div>
+        </form>
+    </div>
 </div>
 
 </body>

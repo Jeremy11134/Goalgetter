@@ -37,48 +37,51 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 ?>
 
 <!DOCTYPE html>
-<html>
+<html lang="nl">
 <head>
-    <title>Registreren</title>
-     <link rel="stylesheet" href="/Goalgetter/view/register.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Registreren – GoalGetter</title>
+    <link rel="stylesheet" href="/Goalgetter/view/register.css">
 </head>
-<body>
+<body class="auth-page">
 
+<div class="auth-shell">
+    <h1 class="auth-brand">GoalGetter</h1>
+    <div class="auth-card">
+        <h2 class="auth-title">Registreren</h2>
 
-<?php if ($error): ?>
-    <p style="color:red;"><?= $error ?></p>
-<?php endif; ?>
+        <?php if ($error): ?>
+            <p class="alert alert-error"><?= htmlspecialchars($error) ?></p>
+        <?php endif; ?>
 
-<?php if ($success): ?>
-    <p style="color:green;"><?= $success ?></p>
-<?php endif; ?>
+        <?php if ($success): ?>
+            <p class="alert alert-success"><?= htmlspecialchars($success) ?></p>
+        <?php endif; ?>
 
-<div class="register-container">
-<form method="POST">
-    <h2>Registreren</h2>
+        <form method="POST">
+            <label for="voornaam">Voornaam</label>
+            <input type="text" id="voornaam" name="voornaam" required autocomplete="given-name">
 
-    <label>Voornaam:</label><br>
-    <input type="text" name="voornaam" required><br><br>
+            <label for="tussenvoegsels">Tussenvoegsels</label>
+            <input type="text" id="tussenvoegsels" name="tussenvoegsels" autocomplete="additional-name">
 
-    <label>Tussenvoegsels:</label><br>
-    <input type="text" name="tussenvoegsels"><br><br>
+            <label for="achternaam">Achternaam</label>
+            <input type="text" id="achternaam" name="achternaam" required autocomplete="family-name">
 
-    <label>Achternaam:</label><br>
-    <input type="text" name="achternaam" required><br><br>
+            <label for="email">E-mail</label>
+            <input type="email" id="email" name="email" required autocomplete="email">
 
-    <label>Email:</label><br>
-    <input type="email" name="email" required><br><br>
+            <label for="password">Wachtwoord</label>
+            <input type="password" id="password" name="password" required autocomplete="new-password">
 
-    <label>Wachtwoord:</label><br>
-    <input type="password" name="password" required><br><br>
-
-    <button type="submit">Registreren</button>
-    <div class="extra-links">
-            <a href="login.php">Nog geen account? Log in</a>
-        </div>
-</form>
+            <button type="submit">Registreren</button>
+            <div class="extra-links">
+                <a href="login.php">Heb je al een account? Log in</a>
+            </div>
+        </form>
+    </div>
 </div>
-
 
 </body>
 </html>

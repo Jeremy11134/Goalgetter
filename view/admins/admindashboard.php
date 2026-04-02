@@ -19,8 +19,10 @@ $aantalTrainingen  = $pdo->query("SELECT COUNT(*) FROM trainingen")->fetchColumn
 ?>
 
 <!DOCTYPE html>
-<html>
+<html lang="nl">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Admin Dashboard</title>
     <link rel="stylesheet" href="../style.css">
 </head>
@@ -48,7 +50,9 @@ $aantalTrainingen  = $pdo->query("SELECT COUNT(*) FROM trainingen")->fetchColumn
             <h2>Dashboard</h2>
         </div>
 
-        <p style="margin-bottom:20px;">Welkom Admin 👑</p>
+        <p class="welcome-line">Welkom, admin.</p>
+
+        <?php require __DIR__ . '/../partials/notification_panel.php'; ?>
 
         <!-- ✅ Grid zoals andere pagina's -->
         <div class="dashboard-grid">

@@ -46,28 +46,35 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 ?>
 
 <!DOCTYPE html>
-<html>
+<html lang="nl">
 <head>
-     <link rel="stylesheet" href="/Goalgetter/view/verify.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Beveiligingscode – GoalGetter</title>
+    <link rel="stylesheet" href="/Goalgetter/view/verify.css">
 </head>
-<body>
+<body class="auth-page">
 
-<form method="POST">
-    <h2>Voer 2FA code in</h2>
+<div class="auth-shell">
+    <h1 class="auth-brand">GoalGetter</h1>
+    <form method="POST" class="auth-verify-form">
+        <h2>Voer je code in</h2>
+        <p style="text-align:center;margin:0;color:var(--gg-text-muted);font-size:14px;">We hebben een 4-cijferige code naar je e-mail gestuurd.</p>
 
-    <?php if (!empty($error)): ?>
-        <p class="error"><?= $error ?></p>
-    <?php endif; ?>
+        <?php if (!empty($error)): ?>
+            <p class="error"><?= htmlspecialchars($error) ?></p>
+        <?php endif; ?>
 
-    <div class="code-inputs">
-        <input type="text" maxlength="1" name="code1" required>
-        <input type="text" maxlength="1" name="code2" required>
-        <input type="text" maxlength="1" name="code3" required>
-        <input type="text" maxlength="1" name="code4" required>
-    </div>
+        <div class="code-inputs">
+            <input type="text" maxlength="1" name="code1" required inputmode="numeric" pattern="[0-9]*" aria-label="Eerste cijfer">
+            <input type="text" maxlength="1" name="code2" required inputmode="numeric" pattern="[0-9]*" aria-label="Tweede cijfer">
+            <input type="text" maxlength="1" name="code3" required inputmode="numeric" pattern="[0-9]*" aria-label="Derde cijfer">
+            <input type="text" maxlength="1" name="code4" required inputmode="numeric" pattern="[0-9]*" aria-label="Vierde cijfer">
+        </div>
 
-    <button type="submit">Verifiëren</button>
-</form>
+        <button type="submit">Verifiëren</button>
+    </form>
+</div>
 
 <script>
     const inputs = document.querySelectorAll('.code-inputs input');

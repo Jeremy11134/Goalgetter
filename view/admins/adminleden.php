@@ -158,16 +158,18 @@ $spelers = $pdo->query("
         <h2 style="margin-top:40px;">Spelers</h2>
         <button onclick="openSpelerModal()" class="btn-add">+</button>
 
-        <table class="stat-table">
-            <tr>
-                <th>Naam</th>
-                <th>Goals</th>
-                <th>W</th>
-                <th>D</th>
-                <th>L</th>
-                <th>Acties</th>
-            </tr>
-
+        <table class="wedstrijd-table">
+            <thead>
+                <tr>
+                    <th>Naam</th>
+                    <th>Goals</th>
+                    <th>W</th>
+                    <th>D</th>
+                    <th>L</th>
+                    <th>Acties</th>
+                </tr>
+            </thead>
+            <tbody>
             <?php foreach ($spelers as $speler): ?>
                 <tr>
                     <td>
@@ -178,8 +180,9 @@ $spelers = $pdo->query("
                     <td><?= $speler['win'] ?></td>
                     <td><?= $speler['draw'] ?></td>
                     <td><?= $speler['loses'] ?></td>
-                    <td>
-                        <button onclick="openStatsModal(
+                    <td class="actie-buttons">
+                        <button type="button" class="btn-edit"
+                            onclick="openStatsModal(
                             '<?= $speler['stat_id'] ?>',
                             '<?= $speler['goals'] ?>',
                             '<?= $speler['win'] ?>',
@@ -187,10 +190,13 @@ $spelers = $pdo->query("
                             '<?= $speler['loses'] ?>'
                         )">✏️</button>
 
-                        <a href="?delete_speler=<?= $speler['id'] ?>" class="btn-delete">🗑</a>
+                        <a href="?delete_speler=<?= $speler['id'] ?>"
+                           class="btn-delete"
+                           onclick="return confirm('Weet je zeker dat je deze speler wilt verwijderen?');">🗑</a>
                     </td>
                 </tr>
             <?php endforeach; ?>
+            </tbody>
         </table>
 
     </div>

@@ -124,7 +124,7 @@ if (isset($_POST['update_stats'])) {
             <button class="btn-add" onclick="openModal()">+</button>
         </div>
 
-<table class="stat-table">
+<table class="wedstrijd-table">
     <thead>
         <tr>
             <th>Naam</th>
@@ -151,7 +151,7 @@ if (isset($_POST['update_stats'])) {
 
                 <td class="actie-buttons">
 
-                    <button class="btn-edit"
+                    <button type="button" class="btn-edit"
                         onclick="openStatsModal(
                             '<?= $speler['statistieken_id'] ?>',
                             '<?= $speler['goals'] ?>',

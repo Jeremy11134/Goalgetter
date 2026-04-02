@@ -19,7 +19,7 @@ public function create(
     string $titel,
     string $date,
     string $status
-): bool {
+): ?int {
 
     try {
         $this->pdo->beginTransaction();
@@ -37,13 +37,15 @@ public function create(
             'status' => $status
         ]);
 
+        $id = (int) $this->pdo->lastInsertId();
         $this->pdo->commit();
-        return true;
+
+        return $id > 0 ? $id : null;
 
     } catch (PDOException $e) {
         $this->pdo->rollBack();
         error_log("Wedstrijden::create error: " . $e->getMessage());
-        return false;
+        return null;
     }
 }
     /* ===============================

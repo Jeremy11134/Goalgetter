@@ -73,6 +73,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $status
         );
 
+        if ($wedstrijdId === null) {
+            header("Location: trainerwedstrijden.php");
+            exit;
+        }
+
+        if (
+            isset($_SESSION['user_id'])
+            && ($_SESSION['role'] ?? '') === 'trainer'
+        ) {
+            require_once __DIR__ . '/../../app/notifications.php';
+            (new Notifications($pdo))->notifyNewWedstrijd(
+                (int) $_SESSION['user_id'],
+                $wedstrijdId,
+                $titel,
+                $date
+            );
+        }
+
         // 🔥 spelers opslaan
         foreach ($spelersSelected as $spelerId) {
             $stmt = $pdo->prepare("
